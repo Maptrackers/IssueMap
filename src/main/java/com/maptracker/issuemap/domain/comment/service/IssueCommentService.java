@@ -22,9 +22,9 @@ public class IssueCommentService {
     private final UserRepository userRepository;
 
     @Transactional
-    public IssueCommentResponseDto createComment(IssueCommentRequestDto requestDto, Long userId) {
+    public IssueCommentResponseDto createComment(Long issueId, IssueCommentRequestDto requestDto, Long userId) {
         // 1. 이슈 조회
-        Issue issue = issueRepository.findById(requestDto.getIssueId()).orElseThrow(() -> new MyException(MyErrorCode.ISSUE_NOT_FOUND));
+        Issue issue = issueRepository.findById(issueId).orElseThrow(() -> new MyException(MyErrorCode.ISSUE_NOT_FOUND));
         // 2. 유저 조회
         User user = userRepository.findById(userId).orElseThrow(() -> new MyException(MyErrorCode.USER_NOT_FOUND));
         // 3. 부모 댓글 조회 (null이면 처음 상위 댓글)

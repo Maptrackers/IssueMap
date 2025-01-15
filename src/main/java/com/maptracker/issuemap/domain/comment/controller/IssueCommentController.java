@@ -11,17 +11,18 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/comments")
+@RequestMapping("/api/issues")
 @RequiredArgsConstructor
 public class IssueCommentController {
     private final IssueCommentService commentService;
 
-    @PostMapping
+    @PostMapping("/{issueId}/comments")
     public ResponseEntity<IssueCommentResponseDto> createComment(
+            @PathVariable Long issueId,                      // PathVariable로 issueId를 받음
             @RequestBody IssueCommentRequestDto requestDto,
-            @RequestParam Long userId
+            @RequestParam Long userId                        // QueryParam으로 userId를 받음
     ) {
-        IssueCommentResponseDto responseDto = commentService.createComment(requestDto, userId);
+        IssueCommentResponseDto responseDto = commentService.createComment(issueId, requestDto, userId);
         return ResponseEntity.ok(responseDto);
     }
 

@@ -40,6 +40,7 @@ class IssueCommentServiceTest {
     @DisplayName("댓글을 생성하면 생성된 댓글의 정보를 반환한다")
     void createComment() {
         // Given
+        Long issueId = 1L;
         Long userId = 1L;
         IssueCommentRequestDto requestDto = new IssueCommentRequestDto(1L, null, "테스트 댓글 내용");
 
@@ -47,7 +48,7 @@ class IssueCommentServiceTest {
         User user = mock(User.class);
         IssueComment savedComment = mock(IssueComment.class);
 
-        given(issueRepository.findById(1L)).willReturn(Optional.of(issue));
+        given(issueRepository.findById(issueId)).willReturn(Optional.of(issue));
         given(userRepository.findById(userId)).willReturn(Optional.of(user));
         given(commentRepository.save(any(IssueComment.class))).willReturn(savedComment);
 
@@ -57,7 +58,7 @@ class IssueCommentServiceTest {
         given(savedComment.getUser()).willReturn(user);
 
         // When
-        IssueCommentResponseDto responseDto = commentService.createComment(requestDto, userId);
+        IssueCommentResponseDto responseDto = commentService.createComment(issueId, requestDto, userId);
 
         // Then
         assertAll(
@@ -71,13 +72,14 @@ class IssueCommentServiceTest {
     @DisplayName("존재하지 않는 이슈에 댓글을 생성하려고 하면 예외를 던진다")
     void createCommentWhenIssueNotFound() {
         // Given
+        Long issueId = 1L;
         Long userId = 1L;
         IssueCommentRequestDto requestDto = new IssueCommentRequestDto(1L, null, "테스트 댓글 내용");
 
         given(issueRepository.findById(1L)).willReturn(Optional.empty());
 
         // When & Then
-        MyException exception = assertThrows(MyException.class, () -> commentService.createComment(requestDto, userId));
+        MyException exception = assertThrows(MyException.class, () -> commentService.createComment(issueId, requestDto, userId));
 
         assertAll(
                 () -> assertThat(exception.getErrorCode()).isEqualTo(MyErrorCode.ISSUE_NOT_FOUND),
