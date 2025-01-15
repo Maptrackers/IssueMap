@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -19,11 +20,17 @@ public class Team {
     @Column(name = "team_name", nullable = false)
     private String teamName;
 
+    @ElementCollection(fetch = FetchType.EAGER) // 즉시 로딩으로 설정
+    @CollectionTable(name = "team_member_emails", joinColumns = @JoinColumn(name = "team_id")) // 매핑 테이블 명시
+    @Column(name = "member_email") // 컬럼 이름 지정
+    private List<String> memberEmails;
+
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Project> projects;
 
     @Builder
-    public Team(String teamName) {
+    public Team(String teamName, List<String> memberEmails) {
         this.teamName = teamName;
+        this.memberEmails = memberEmails != null ? memberEmails : new ArrayList<>();
     }
 }
