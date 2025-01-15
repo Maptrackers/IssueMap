@@ -36,6 +36,7 @@ out/
 ### VS Code ###
 .vscode/
 
-# Ignore .env file
-.env
+# Ignore application.yaml
+application.yml
+
 
