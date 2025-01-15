@@ -9,6 +9,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -32,10 +33,10 @@ public class IssueComment extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
-    private IssueComment parent;
+    private IssueComment parentComment; //부모 댓글
 
-    @OneToMany(mappedBy = "parent")
-    private List<IssueComment> replies;
+    @OneToMany(mappedBy = "parentComment", orphanRemoval = true)
+    private List<IssueComment> childrenComment = new ArrayList<>(); //자식 댓글들(대댓글)
 
 
 }
