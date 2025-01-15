@@ -1,15 +1,16 @@
 package com.maptracker.issuemap.domain.user.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.maptracker.issuemap.common.error.UserErrorCode;
 import com.maptracker.issuemap.domain.user.dto.UserSignupRequest;
 import com.maptracker.issuemap.domain.user.dto.UserSignupResponse;
+import com.maptracker.issuemap.domain.user.exception.UserException;
 import com.maptracker.issuemap.domain.user.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -35,9 +36,8 @@ class UserControllerTest {
     private UserService userService;
 
     @Test
-    @DisplayName("회원가입 성공 테스트")
     @WithMockUser
-    void signup_success() throws Exception {
+    void 회원가입_성공시_응답값이_정상적으로_반환된다() throws Exception {
         // given
         UserSignupRequest request = UserSignupRequest.builder()
                 .username("testUser")
@@ -63,7 +63,6 @@ class UserControllerTest {
     }
 
     @Test
-    @DisplayName("회원가입 실패 - 이메일 중복 테스트")
     @WithMockUser
     void 회원가입_실패_이메일_중복() throws Exception {
         // given
@@ -75,7 +74,7 @@ class UserControllerTest {
                 .build();
 
         when(userService.signup(any(UserSignupRequest.class)))
-                .thenThrow(new IllegalArgumentException("이미 사용 중인 이메일입니다."));
+                .thenThrow(new UserException(UserErrorCode.USER_ALREADY_EXIST));
 
         // when & then
         mockMvc.perform(post("/api/users/signup")

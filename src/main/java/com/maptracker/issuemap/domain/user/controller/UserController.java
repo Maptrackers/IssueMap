@@ -14,12 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
 public class UserController {
-
     private final UserService userService;
 
     @PostMapping("/signup")
     public ResponseEntity<UserSignupResponse> signup(@RequestBody UserSignupRequest request) {
         return ResponseEntity.ok(userService.signup(request));
     }
-
 }

@@ -4,10 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import com.maptracker.issuemap.common.error.UserErrorCode;
 import com.maptracker.issuemap.domain.user.dto.UserSignupRequest;
 import com.maptracker.issuemap.domain.user.dto.UserSignupResponse;
 import com.maptracker.issuemap.domain.user.entity.Role;
 import com.maptracker.issuemap.domain.user.entity.User;
+import com.maptracker.issuemap.domain.user.exception.UserException;
 import com.maptracker.issuemap.domain.user.repository.UserRepository;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -75,8 +77,8 @@ class UserServiceTest {
 
         //when && then
         Assertions.assertThatThrownBy(() -> userService.signup(request))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("이미 사용 중인 이메일입니다.");
+                .isInstanceOf(UserException.class)
+                .hasMessage(UserErrorCode.USER_ALREADY_EXIST.getDescription());
     }
 
     private static UserSignupRequest createSignupRequest() {
