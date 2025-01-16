@@ -32,6 +32,7 @@ public class SecurityConfig {
                         // 특정 API 경로 허용
                         .requestMatchers("/api/teams/**").permitAll()
                         .requestMatchers("/api/users/signup").permitAll()
+                        .requestMatchers("/api/issue/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .httpBasic(AbstractHttpConfigurer::disable);
