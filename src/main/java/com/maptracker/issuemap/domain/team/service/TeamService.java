@@ -42,4 +42,33 @@ public class TeamService {
                 .memberEmails(team.getMemberEmails())
                 .build();
     }
+
+    // 팀 수정
+    public TeamResponseDto updateTeam(Long teamId, TeamRequestDto teamRequestDto) {
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new IllegalArgumentException("Team not found with id: " + teamId));
+
+        // 수정 로직
+        team.setTeamName(teamRequestDto.getTeamName());
+        team.setMemberEmails(teamRequestDto.getMemberEmails());
+
+        Team updatedTeam = teamRepository.save(team); // 저장 후 반환
+
+        return TeamResponseDto.builder()
+                .id(updatedTeam.getId())
+                .teamName(updatedTeam.getTeamName())
+                .memberEmails(updatedTeam.getMemberEmails())
+                .build();
+    }
+
+    // 팀 삭제
+    public void deleteTeam(Long teamId) {
+        if (!teamRepository.existsById(teamId)) {
+            throw new IllegalArgumentException("Team not found with id: " + teamId);
+        }
+        teamRepository.deleteById(teamId);
+    }
+
+
+
 }

@@ -47,4 +47,49 @@ public class TeamController {
         TeamResponseDto teamResponseDto = teamService.getTeam(teamId);
         return ResponseEntity.ok(teamResponseDto);
     }
+
+    @Operation(
+            summary = "팀 수정 API",
+            description = "팀 ID를 기반으로 팀 정보를 수정합니다.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "팀 수정 성공",
+                            content = @Content(schema = @Schema(implementation = TeamResponseDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "잘못된 요청 데이터"
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "팀을 찾을 수 없음"
+                    )
+            }
+    )
+    @PutMapping("/{teamId}")
+    public ResponseEntity<TeamResponseDto> updateTeam(@PathVariable Long teamId, @RequestBody TeamRequestDto teamRequestDto){
+        TeamResponseDto teamResponseDto = teamService.updateTeam(teamId, teamRequestDto);
+        return ResponseEntity.ok(teamResponseDto);
+    }
+
+    @Operation(
+            summary = "팀 삭제 API",
+            description = "팀 ID를 기반으로 팀을 삭제합니다.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "204",
+                            description = "팀 삭제 성공"
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "팀을 찾을 수 없음"
+                    )
+            }
+    )
+    @DeleteMapping("/{teamId}")
+    public ResponseEntity<Void> deleteTeam(@PathVariable Long teamId) {
+        teamService.deleteTeam(teamId);
+        return ResponseEntity.noContent().build();
+    }
 }

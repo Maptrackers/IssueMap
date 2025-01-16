@@ -70,11 +70,9 @@ public class SecurityConfig {
         http
                 .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
 
-
         LoginFilter loginFilter = new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil);
         loginFilter.setFilterProcessesUrl("/api/users/login");
         http.addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
-
 
 
         return http.build();
