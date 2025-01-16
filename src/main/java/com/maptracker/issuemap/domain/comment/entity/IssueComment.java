@@ -50,4 +50,12 @@ public class IssueComment extends BaseTimeEntity {
         this.parentComment = parentComment;
         this.isDeleted = false;
     }
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
+
+    public void markDeleted() {
+        this.isDeleted = true;
+    }
 }
