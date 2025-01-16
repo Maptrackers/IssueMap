@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+import static com.maptracker.issuemap.domain.issue.entity.IssueStatus.BEFORE;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -36,15 +38,17 @@ public class Issue extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private IssueType issueType;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private IssueStatus issueStatus;
 
     @Builder
-    private Issue(User user, Project project, String title, String content, IssueType issueType) {
+    private Issue(User user, Project project, String title, String content, IssueType issueType, IssueStatus issueStatus) {
         this.user = user;
         this.project = project;
         this.title = title;
         this.content = content;
         this.issueType = issueType;
+        this.issueStatus = issueStatus;
     }
 
     public static Issue create(User user, Project project, String title, String issuetype) {
@@ -54,7 +58,25 @@ public class Issue extends BaseTimeEntity {
                 .title(title)
                 .content(null)
                 .issueType(IssueType.valueOf(issuetype.toUpperCase()))
+                .issueStatus(BEFORE)
                 .build();
     }
+
+    public void updateTitle(String title) {
+        this.title = title;
+    }
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
+
+    public void updateIssueType(IssueType issueType) {
+        this.issueType = issueType;
+    }
+
+    public void updateStatus(IssueStatus issueStatus) {
+        this.issueStatus = issueStatus;
+    }
+
 
 }
