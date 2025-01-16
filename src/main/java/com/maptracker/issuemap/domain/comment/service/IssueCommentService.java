@@ -67,4 +67,23 @@ public class IssueCommentService {
                 .userId(comment.getUser().getId())
                 .build();
     }
+
+    @Transactional
+    public void deleteComment(Long issueId, Long commentId, Long userId) {
+        // 1. 댓글 조회
+        IssueComment comment = commentRepository.findById(commentId).orElseThrow(() -> new MyException(MyErrorCode.COMMENT_NOT_FOUND));
+
+        // 2. 이슈와 댓글 매칭 확인
+        if (!comment.getIssue().getId().equals(issueId)) {
+            throw new MyException(MyErrorCode.ISSUE_MISMATCH);
+        }
+
+        // 3. 유저와 댓글 작성자 매칭 확인
+        if (!comment.getUser().getId().equals(userId)) {
+            throw new MyException(MyErrorCode.UNAUTHORIZED_USER);
+        }
+
+        comment.markDeleted(); // Soft delete
+        commentRepository.save(comment);
+    }
 }
