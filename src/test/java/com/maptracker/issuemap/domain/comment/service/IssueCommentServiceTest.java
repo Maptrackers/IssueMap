@@ -86,4 +86,77 @@ class IssueCommentServiceTest {
                 () -> verify(commentRepository, never()).save(any(IssueComment.class))
         );
     }
+
+    @Test
+    @DisplayName("다른 사용자가 댓글을 수정하려고 하면 예외를 던진다")
+    void updateCommentWhenUnauthorizedUser() {
+        // Given
+        Long issueId = 1L;
+        Long commentId = 1L;
+        Long userId = 2L; // 다른 사용자 ID
+        IssueCommentRequestDto requestDto = new IssueCommentRequestDto(null, null, "수정된 댓글 내용");
+
+        IssueComment comment = mock(IssueComment.class);
+        Issue issue = mock(Issue.class);
+        User anotherUser = mock(User.class);
+
+        given(commentRepository.findById(commentId)).willReturn(Optional.of(comment));
+        given(comment.getIssue()).willReturn(issue);
+        given(issue.getId()).willReturn(issueId);
+        given(comment.getUser()).willReturn(anotherUser);
+        given(anotherUser.getId()).willReturn(1L); // 댓글 작성자는 다른 사용자
+
+        // When & Then
+        MyException exception = assertThrows(MyException.class, () -> commentService.updateComment(issueId, commentId, requestDto, userId));
+        assertThat(exception.getErrorCode()).isEqualTo(MyErrorCode.UNAUTHORIZED_USER);
+    }
+
+    @Test
+    @DisplayName("댓글을 삭제하면 삭제된 댓글이 표시되지 않는다")
+    void deleteComment() {
+        // Given
+        Long issueId = 1L;
+        Long commentId = 1L;
+        Long userId = 1L;
+
+        IssueComment comment = mock(IssueComment.class);
+        Issue issue = mock(Issue.class);
+        User user = mock(User.class);
+
+        given(commentRepository.findById(commentId)).willReturn(Optional.of(comment));
+        given(comment.getIssue()).willReturn(issue);
+        given(issue.getId()).willReturn(issueId);
+        given(comment.getUser()).willReturn(user);
+        given(user.getId()).willReturn(userId);
+
+        // When
+        commentService.deleteComment(issueId, commentId, userId);
+
+        // Then
+        verify(comment).markDeleted(); // Soft delete 호출 확인
+        verify(commentRepository, times(1)).save(comment);
+    }
+
+    @Test
+    @DisplayName("다른 사용자가 댓글을 삭제하려고 하면 예외를 던진다")
+    void deleteCommentWhenUnauthorizedUser() {
+        // Given
+        Long issueId = 1L;
+        Long commentId = 1L;
+        Long userId = 2L; // 다른 사용자 ID
+
+        IssueComment comment = mock(IssueComment.class);
+        Issue issue = mock(Issue.class);
+        User anotherUser = mock(User.class);
+
+        given(commentRepository.findById(commentId)).willReturn(Optional.of(comment));
+        given(comment.getIssue()).willReturn(issue);
+        given(issue.getId()).willReturn(issueId);
+        given(comment.getUser()).willReturn(anotherUser);
+        given(anotherUser.getId()).willReturn(1L); // 댓글 작성자는 다른 사용자
+
+        // When & Then
+        MyException exception = assertThrows(MyException.class, () -> commentService.deleteComment(issueId, commentId, userId));
+        assertThat(exception.getErrorCode()).isEqualTo(MyErrorCode.UNAUTHORIZED_USER);
+    }
 }
