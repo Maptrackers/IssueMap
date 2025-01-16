@@ -3,11 +3,14 @@ package com.maptracker.issuemap.domain.comment.controller;
 
 import com.maptracker.issuemap.domain.comment.dto.IssueCommentRequestDto;
 import com.maptracker.issuemap.domain.comment.dto.IssueCommentResponseDto;
+import com.maptracker.issuemap.domain.comment.service.IssueCommentQueryService;
 import com.maptracker.issuemap.domain.comment.service.IssueCommentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -15,6 +18,15 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class IssueCommentController {
     private final IssueCommentService commentService;
+    private final IssueCommentQueryService commentQueryService;
+
+    @GetMapping("/{issueId}/comments")
+    public ResponseEntity<List<IssueCommentResponseDto>> getCommentsByIssue(
+            @PathVariable Long issueId
+    ) {
+        List<IssueCommentResponseDto> comments = commentQueryService.getCommentsByIssue(issueId);
+        return ResponseEntity.ok(comments);
+    }
 
     @PostMapping("/{issueId}/comments")
     public ResponseEntity<IssueCommentResponseDto> createComment(
