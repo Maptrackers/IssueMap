@@ -6,9 +6,11 @@ import com.maptracker.issuemap.domain.user.entity.User;
 import jakarta.persistence.*;
 import jakarta.persistence.Entity;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -32,10 +34,20 @@ public class IssueComment extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
-    private IssueComment parent;
+    private IssueComment parentComment; //부모 댓글
 
-    @OneToMany(mappedBy = "parent")
-    private List<IssueComment> replies;
+    @OneToMany(mappedBy = "parentComment", orphanRemoval = true)
+    private List<IssueComment> childrenComment = new ArrayList<>(); //자식 댓글들(대댓글)
 
+    @Column(name = "is_deleted")
+    private Boolean isDeleted;
 
+    @Builder
+    public IssueComment(String content, User user, Issue issue, IssueComment parentComment) {
+        this.content = content;
+        this.user = user;
+        this.issue = issue;
+        this.parentComment = parentComment;
+        this.isDeleted = false;
+    }
 }
