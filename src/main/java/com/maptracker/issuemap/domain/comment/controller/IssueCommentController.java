@@ -26,4 +26,25 @@ public class IssueCommentController {
         return ResponseEntity.ok(responseDto);
     }
 
+    @PutMapping("/{issueId}/comments/{commentId}")
+    public ResponseEntity<IssueCommentResponseDto> updateComment(
+            @PathVariable Long issueId,
+            @PathVariable Long commentId,
+            @RequestBody IssueCommentRequestDto requestDto,
+            @RequestParam Long userId
+    ) {
+        IssueCommentResponseDto responseDto = commentService.updateComment(issueId, commentId, requestDto, userId);
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @DeleteMapping("/{issueId}/comments/{commentId}")
+    public ResponseEntity<Void> deleteComment(
+            @PathVariable Long issueId,
+            @PathVariable Long commentId,
+            @RequestParam Long userId
+    ) {
+        commentService.deleteComment(issueId, commentId, userId);
+        return ResponseEntity.noContent().build();
+    }
+
 }
