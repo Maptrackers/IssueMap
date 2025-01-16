@@ -14,7 +14,7 @@ import java.util.List;
 @Builder
 public class TeamRequestDto {
 
-    @Schema(description = "팀 이름", example = "Development Team")
+    @Schema(description = "팀 이름", example = "MapTrackers")
     private String teamName;
 
     @Schema(
