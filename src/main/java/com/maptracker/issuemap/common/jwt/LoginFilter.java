@@ -60,8 +60,10 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         CustomUserDetails customUserDetails = (CustomUserDetails) authResult.getPrincipal();
         String userEmail = customUserDetails.getUsername();
 
-        String token = jwtUtil.createJwt(userEmail, 60 * 60 * 10L);
-        response.addHeader("Authorization", "Bearer " + token);
+        String accessToken = jwtUtil.createJwt(userEmail, 60 * 60L);
+        String refreshToken = jwtUtil.createJwt(userEmail, 60 * 60 * 10L);
+        response.addHeader("Authorization", "Bearer " + accessToken);
+        response.addHeader("Refresh-Token", "Bearer " + refreshToken);
     }
 
     @Override
