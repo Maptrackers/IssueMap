@@ -1,7 +1,7 @@
 package com.maptracker.issuemap.common.config;
 
-import com.maptracker.issuemap.common.jwt.JWTFilter;
-import com.maptracker.issuemap.common.jwt.JWTUtil;
+import com.maptracker.issuemap.common.jwt.JwtFilter;
+import com.maptracker.issuemap.common.jwt.JwtUtil;
 import com.maptracker.issuemap.common.jwt.LoginFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -23,7 +23,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
-    private final JWTUtil jwtUtil;
+    private final JwtUtil jwtUtil;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -71,7 +71,7 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         http
-                .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
+                .addFilterBefore(new JwtFilter(jwtUtil), LoginFilter.class);
 
         LoginFilter loginFilter = new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil);
         loginFilter.setFilterProcessesUrl("/api/users/login");
