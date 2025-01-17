@@ -24,10 +24,11 @@ public class ProjectService {
         Team team = teamRepository.findById(projectRequestDto.getTeamId())
                 .orElseThrow(() -> new IllegalArgumentException("Team not found"));
 
-        Project project = new Project();
-        project.setTeam(team);
-        project.setProjectName(projectRequestDto.getProjectName());
-        project.setCreatedAt(LocalDateTime.now());
+        Project project = Project.builder()
+                .team(team)
+                .projectName(projectRequestDto.getProjectName())
+                .createdAt(LocalDateTime.now())
+                .build();
 
         Project savedProject = projectRepository.save(project);
 
