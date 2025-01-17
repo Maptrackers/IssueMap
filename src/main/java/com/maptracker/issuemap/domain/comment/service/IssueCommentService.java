@@ -86,4 +86,42 @@ public class IssueCommentService {
         comment.markDeleted(); // Soft delete
         commentRepository.save(comment);
     }
+
+
+    // 대댓글 생성
+    @Transactional
+    public IssueCommentResponseDto createReply(Long issueId, Long parentCommentId, IssueCommentRequestDto requestDto, Long userId) {
+        // 1. 이슈 조회 및 존재 여부 확인
+        Issue issue = issueRepository.findById(issueId)
+                .orElseThrow(() -> new MyException(MyErrorCode.ISSUE_NOT_FOUND));
+
+        // 2. 유저 조회 및 존재 여부 확인
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new MyException(MyErrorCode.USER_NOT_FOUND));
+
+        // 3. 부모 댓글 조회 및 존재 여부 확인
+        IssueComment parentComment = commentRepository.findById(parentCommentId)
+                .orElseThrow(() -> new MyException(MyErrorCode.PARENT_COMMENT_NOT_FOUND));
+
+        // 4. 부모 댓글이 해당 이슈에 속해 있는지 확인
+        if (!parentComment.getIssue().getId().equals(issueId)) {
+            throw new MyException(MyErrorCode.ISSUE_MISMATCH);
+        }
+        IssueComment reply = IssueComment.builder()
+                .content(requestDto.getContent())
+                .user(user)
+                .issue(issue)
+                .parentComment(parentComment)
+                .build();
+
+        IssueComment savedReply = commentRepository.save(reply);
+
+        return IssueCommentResponseDto.builder()
+                .id(savedReply.getId())
+                .content(savedReply.getContent())
+                .userId(savedReply.getUser().getId())
+                .issueId(savedReply.getIssue().getId())
+                .parentCommentId(savedReply.getParentComment().getId())
+                .build();
+    }
 }

@@ -59,4 +59,14 @@ public class IssueCommentController {
         return ResponseEntity.noContent().build();
     }
 
+    // 대댓글 생성
+    @PostMapping("/{issueId}/comments/{parentCommentId}/replies")
+    public ResponseEntity<IssueCommentResponseDto> createReply(
+            @PathVariable Long issueId,
+            @PathVariable Long parentCommentId,
+            @RequestBody IssueCommentRequestDto requestDto,
+            @RequestParam Long userId) {  // userId는 요청의 인증 정보에서 가져온다고 가정
+        IssueCommentResponseDto response = commentService.createReply(issueId, parentCommentId, requestDto, userId);
+        return ResponseEntity.ok(response);
+    }
 }
