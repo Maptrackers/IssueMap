@@ -61,6 +61,7 @@ public class SecurityConfig {
                         ).permitAll()
                         // 특정 API 경로 허용
                         .requestMatchers("/api/teams/**").permitAll()
+                        .requestMatchers("/api/projects/**").permitAll()
                         .requestMatchers("/api/users/signup").permitAll()
                         .requestMatchers("/api/issues/**").permitAll()
                         .requestMatchers("/api/users/**").permitAll()

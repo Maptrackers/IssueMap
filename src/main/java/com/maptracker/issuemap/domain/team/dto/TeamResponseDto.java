@@ -17,7 +17,7 @@ public class TeamResponseDto {
     @Schema(description = "팀 ID", example = "1")
     private Long id;
 
-    @Schema(description = "팀 이름", example = "Development Team")
+    @Schema(description = "팀 이름", example = "MapTrackers")
     private String teamName;
 
     @Schema(
