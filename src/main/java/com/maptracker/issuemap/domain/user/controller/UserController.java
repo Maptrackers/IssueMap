@@ -5,6 +5,7 @@ import com.maptracker.issuemap.domain.user.dto.UserSignupRequest;
 import com.maptracker.issuemap.domain.user.dto.UserSignupResponse;
 import com.maptracker.issuemap.domain.user.service.UserAuthService;
 import com.maptracker.issuemap.domain.user.service.UserService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,12 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<Object> login(@RequestBody UserLoginRequest request) {
         return ResponseEntity.ok(userAuthService.login(request));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        userAuthService.logout(response);
+        return ResponseEntity.ok().build();
     }
 
 
