@@ -1,17 +1,12 @@
 package com.maptracker.issuemap.domain.user.dto;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+public abstract class UserResponse {
+    public record Info(Long userId, String email) implements UserResponseDto {
+    }
 
-@Getter
-@Setter
-public class UserResponse {
-    private Long userId;
-    private String email;
+    public record Login(Long userId, String email, String token) implements UserResponseDto {
+    }
 
-    public UserResponse(Long userId, String email) {
-        this.userId = userId;
-        this.email = email;
+    public record Signup(String username, String email) implements UserResponseDto {
     }
 }
