@@ -14,6 +14,10 @@ public class CustomUserDetails implements UserDetails {
         this.user = user;
     }
 
+    public Long getUserId() {
+        return user.getId();
+    }
+
     @Override
     public String getUsername() {
         return user.getEmail();

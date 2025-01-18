@@ -43,26 +43,31 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if ((accessToken == null || jwtUtil.isExpired(accessToken)) && refreshToken != null && !jwtUtil.isExpired(refreshToken)) {
             String userEmail = jwtUtil.getUserEmail(refreshToken);
-            String newAccessToken = jwtUtil.createJwt(userEmail, 60 * 60L);
+            Long userId = jwtUtil.getUserId(refreshToken);
+            String newAccessToken = jwtUtil.createJwt(userId, userEmail, 60 * 60L);
             response.setHeader(ACCESS_TOKEN_HEADER, BEARER_PREFIX + newAccessToken);
-            setAuthentication(userEmail);
+            setAuthentication(userId, userEmail);
             accessToken = newAccessToken;
         }
 
         if (accessToken != null && !jwtUtil.isExpired(accessToken)
                 && (refreshToken == null || jwtUtil.isExpired(refreshToken))) {
             String userEmail = jwtUtil.getUserEmail(accessToken);
-            String newRefreshToken = jwtUtil.createJwt(userEmail, 60 * 60L * 24L * 7L);
+            Long userId = jwtUtil.getUserId(accessToken);
+            String newRefreshToken = jwtUtil.createJwt(userId, userEmail, 60 * 60L * 24L * 7L);
             response.setHeader(REFRESH_TOKEN_HEADER, BEARER_PREFIX + newRefreshToken);
         }
 
         if (accessToken != null && !jwtUtil.isExpired(accessToken)) {
             String userEmail = jwtUtil.getUserEmail(accessToken);
-            setAuthentication(userEmail);
+            Long userId = jwtUtil.getUserId(accessToken);
+            setAuthentication(userId, userEmail);
         }
 
         String userEmail = jwtUtil.getUserEmail(accessToken);
+        Long userId = jwtUtil.getUserId(accessToken);
         User userEntity = User.builder()
+                .id(userId)
                 .email(userEmail)
                 .password("temp")
                 .build();
@@ -74,8 +79,9 @@ public class JwtFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private void setAuthentication(String userEmail) {
+    private void setAuthentication(Long userId, String userEmail) {
         User userEntity = User.builder()
+                .id(userId)
                 .email(userEmail)
                 .password("temp")
                 .build();
