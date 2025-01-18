@@ -52,5 +52,21 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserInfoById(userDetails.getUserId()));
     }
 
+    @Operation(
+            summary = "사용자 정보 수정 API",
+            description = "현재 인증된 사용자의 정보를 수정하고, 수정된 정보를 반환합니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "사용자 정보 수정 성공"),
+                    @ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없음")
+            }
+    )
+    @PutMapping
+    public ResponseEntity<UserResponseDto> updateUser(
+            @RequestBody UserRequest.Update request,
+            @AuthenticationPrincipal CustomUserDetails userDetails)
+    {
+        return ResponseEntity.ok(userService.updateUserInfo(userDetails.getUserId(), request));
+    }
+
 
 }
