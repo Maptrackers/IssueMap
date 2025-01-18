@@ -68,5 +68,19 @@ public class UserController {
         return ResponseEntity.ok(userService.updateUserInfo(userDetails.getUserId(), request));
     }
 
+    @Operation(
+            summary = "사용자 삭제 API",
+            description = "현재 인증된 사용자를 삭제합니다.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "사용자 삭제 성공"),
+                    @ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없음")
+            }
+    )
+    @DeleteMapping
+    public ResponseEntity<Void> deleteUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        userService.deleteUser(userDetails.getUserId());
+        return ResponseEntity.ok().build();
+    }
+
 
 }
