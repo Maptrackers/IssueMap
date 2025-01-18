@@ -1,5 +1,5 @@
 package com.maptracker.issuemap.domain.comment.service;
-import com.maptracker.issuemap.domain.comment.dto.IssueCommentRequestDto;
+import com.maptracker.issuemap.domain.comment.dto.IssueCommentCreateDto;
 import com.maptracker.issuemap.domain.comment.dto.IssueCommentResponseDto;
 import com.maptracker.issuemap.domain.comment.entity.IssueComment;
 import com.maptracker.issuemap.domain.comment.exception.MyErrorCode;
@@ -42,7 +42,7 @@ class IssueCommentServiceTest {
         // Given
         Long issueId = 1L;
         Long userId = 1L;
-        IssueCommentRequestDto requestDto = new IssueCommentRequestDto(1L, null, "테스트 댓글 내용");
+        IssueCommentCreateDto requestDto = new IssueCommentCreateDto(1L, null, "테스트 댓글 내용");
 
         Issue issue = mock(Issue.class);
         User user = mock(User.class);
@@ -74,7 +74,7 @@ class IssueCommentServiceTest {
         // Given
         Long issueId = 1L;
         Long userId = 1L;
-        IssueCommentRequestDto requestDto = new IssueCommentRequestDto(1L, null, "테스트 댓글 내용");
+        IssueCommentCreateDto requestDto = new IssueCommentCreateDto(1L, null, "테스트 댓글 내용");
 
         given(issueRepository.findById(1L)).willReturn(Optional.empty());
 
@@ -94,7 +94,7 @@ class IssueCommentServiceTest {
         Long issueId = 1L;
         Long commentId = 1L;
         Long userId = 2L; // 다른 사용자 ID
-        IssueCommentRequestDto requestDto = new IssueCommentRequestDto(null, null, "수정된 댓글 내용");
+        IssueCommentCreateDto requestDto = new IssueCommentCreateDto(null, null, "수정된 댓글 내용");
 
         IssueComment comment = mock(IssueComment.class);
         Issue issue = mock(Issue.class);

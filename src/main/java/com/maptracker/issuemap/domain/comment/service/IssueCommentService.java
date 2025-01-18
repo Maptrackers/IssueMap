@@ -1,6 +1,6 @@
 package com.maptracker.issuemap.domain.comment.service;
 
-import com.maptracker.issuemap.domain.comment.dto.IssueCommentRequestDto;
+import com.maptracker.issuemap.domain.comment.dto.IssueCommentCreateDto;
 import com.maptracker.issuemap.domain.comment.dto.IssueCommentResponseDto;
 import com.maptracker.issuemap.domain.comment.entity.IssueComment;
 import com.maptracker.issuemap.domain.comment.exception.MyErrorCode;
@@ -22,7 +22,7 @@ public class IssueCommentService {
     private final UserRepository userRepository;
 
     @Transactional
-    public IssueCommentResponseDto createComment(Long issueId, IssueCommentRequestDto requestDto, Long userId) {
+    public IssueCommentResponseDto createComment(Long issueId, IssueCommentCreateDto requestDto, Long userId) {
         // 1. 이슈 조회
         Issue issue = issueRepository.findById(issueId).orElseThrow(() -> new MyException(MyErrorCode.ISSUE_NOT_FOUND));
         // 2. 유저 조회
@@ -46,7 +46,7 @@ public class IssueCommentService {
     }
 
     @Transactional
-    public IssueCommentResponseDto updateComment(Long issueId, Long commentId, IssueCommentRequestDto requestDto, Long userId) {
+    public IssueCommentResponseDto updateComment(Long issueId, Long commentId, IssueCommentCreateDto requestDto, Long userId) {
         // 1. 댓글 조회
         IssueComment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new MyException(MyErrorCode.COMMENT_NOT_FOUND));
@@ -90,7 +90,7 @@ public class IssueCommentService {
 
     // 대댓글 생성
     @Transactional
-    public IssueCommentResponseDto createReply(Long issueId, Long parentCommentId, IssueCommentRequestDto requestDto, Long userId) {
+    public IssueCommentResponseDto createReply(Long issueId, Long parentCommentId, IssueCommentCreateDto requestDto, Long userId) {
         // 1. 이슈 조회 및 존재 여부 확인
         Issue issue = issueRepository.findById(issueId)
                 .orElseThrow(() -> new MyException(MyErrorCode.ISSUE_NOT_FOUND));
