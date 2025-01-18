@@ -8,7 +8,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.maptracker.issuemap.domain.user.dto.UserLoginRequest;
 import com.maptracker.issuemap.domain.user.entity.User;
 import com.maptracker.issuemap.domain.user.exception.UserException;
 import com.maptracker.issuemap.domain.user.repository.UserRepository;
@@ -22,7 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
-public class UserAuthServiceTest {
+public class UserAuthServiceddTest {
     @Mock
     private UserRepository userRepository;
 
@@ -30,7 +29,7 @@ public class UserAuthServiceTest {
     private PasswordEncoder passwordEncoder;
 
     @InjectMocks
-    private UserAuthService userAuthService;
+    private UserAuthServicedd userAuthServicedd;
 
     private final String email = "test@example.com";
     private final String rawPassword = "password123";
@@ -55,7 +54,7 @@ public class UserAuthServiceTest {
         when(passwordEncoder.matches(rawPassword, encodedPassword)).thenReturn(true);
 
         // when
-        User result = userAuthService.login(new UserLoginRequest(email, rawPassword));
+        User result = userAuthServicedd.login(new UserLoginRequest(email, rawPassword));
 
         // then
         assertThat(result).isNotNull();
@@ -70,7 +69,7 @@ public class UserAuthServiceTest {
         when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> userAuthService.login(new UserLoginRequest(email, rawPassword)))
+        assertThatThrownBy(() -> userAuthServicedd.login(new UserLoginRequest(email, rawPassword)))
                 .isInstanceOf(UserException.class);
 
         verify(userRepository, times(1)).findByEmail(email);

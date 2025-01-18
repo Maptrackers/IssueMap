@@ -2,11 +2,8 @@ package com.maptracker.issuemap.domain.user.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.maptracker.issuemap.common.error.UserErrorCode;
-import com.maptracker.issuemap.domain.user.dto.UserSignupRequest;
-import com.maptracker.issuemap.domain.user.dto.UserSignupResponse;
 import com.maptracker.issuemap.domain.user.exception.UserException;
 import com.maptracker.issuemap.domain.user.service.UserService;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -51,7 +48,7 @@ class UserControllerTest {
                 .email("test@example.com")
                 .build();
 
-        when(userService.signup(any(UserSignupRequest.class))).thenReturn(response);
+        when(userService.registerUser(any(UserSignupRequest.class))).thenReturn(response);
 
         // when & then
         mockMvc.perform(post("/api/users/signup")
@@ -73,7 +70,7 @@ class UserControllerTest {
                 .password("securePassword")
                 .build();
 
-        when(userService.signup(any(UserSignupRequest.class)))
+        when(userService.registerUser(any(UserSignupRequest.class)))
                 .thenThrow(new UserException(UserErrorCode.USER_ALREADY_EXIST));
 
         // when & then

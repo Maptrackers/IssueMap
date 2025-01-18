@@ -2,7 +2,7 @@ package com.maptracker.issuemap.common.jwt;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.maptracker.issuemap.domain.user.dto.CustomUserDetails;
+import com.maptracker.issuemap.domain.user.dto.UserResponse.Login;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -83,6 +84,15 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         response.addCookie(accessTokenCookie);
         response.addCookie(refreshTokenCookie);
+
+
+
+        Login login = new Login(userId, userEmail, accessToken);
+        ResponseEntity<Login> loginUserApiResponse = ResponseEntity.ok(login);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        response.setContentType("application/json");
+        objectMapper.writeValue(response.getOutputStream(), loginUserApiResponse);
     }
 
     @Override

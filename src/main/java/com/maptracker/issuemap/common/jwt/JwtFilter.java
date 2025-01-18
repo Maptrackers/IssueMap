@@ -1,6 +1,5 @@
 package com.maptracker.issuemap.common.jwt;
 
-import com.maptracker.issuemap.domain.user.dto.CustomUserDetails;
 import com.maptracker.issuemap.domain.user.entity.User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

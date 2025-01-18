@@ -5,8 +5,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import com.maptracker.issuemap.common.error.UserErrorCode;
-import com.maptracker.issuemap.domain.user.dto.UserSignupRequest;
-import com.maptracker.issuemap.domain.user.dto.UserSignupResponse;
 import com.maptracker.issuemap.domain.user.entity.Role;
 import com.maptracker.issuemap.domain.user.entity.User;
 import com.maptracker.issuemap.domain.user.exception.UserException;
@@ -60,7 +58,7 @@ class UserServiceTest {
         when(userRepository.save(any(User.class))).thenReturn(savedUser);
 
         // when
-        UserSignupResponse response = userService.signup(request);
+        UserSignupResponse response = userService.registerUser(request);
 
         // then
         assertThat(response).isNotNull();
@@ -71,17 +69,17 @@ class UserServiceTest {
     @Test
     public void 이메일이_중복되면_회원가입은_실패한다() {
         //given
-        UserSignupRequest request = createSignupRequest();
+        UserSignupRequest request = createRegisterUserRequest();
         User existingUser = createSavedUser();
         when(userRepository.findByEmail(request.getEmail())).thenReturn(Optional.of(existingUser));
 
         //when && then
-        Assertions.assertThatThrownBy(() -> userService.signup(request))
+        Assertions.assertThatThrownBy(() -> userService.registerUser(request))
                 .isInstanceOf(UserException.class)
                 .hasMessage(UserErrorCode.USER_ALREADY_EXIST.getDescription());
     }
 
-    private static UserSignupRequest createSignupRequest() {
+    private static UserSignupRequest createRegisterUserRequest() {
         return UserSignupRequest.builder()
                 .username("test")
                 .email("test@example.com")
