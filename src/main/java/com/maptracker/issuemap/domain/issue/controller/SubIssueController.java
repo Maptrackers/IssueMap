@@ -3,6 +3,7 @@ package com.maptracker.issuemap.domain.issue.controller;
 
 import com.maptracker.issuemap.domain.issue.dto.subissue.SubIssueResponseDto;
 import com.maptracker.issuemap.domain.issue.dto.subissue.SubIssueCreateRequestDto;
+import com.maptracker.issuemap.domain.issue.dto.subissue.SubIssueStatusUpdateRequestDto;
 import com.maptracker.issuemap.domain.issue.dto.subissue.SubIssueUpdateRequestDto;
 import com.maptracker.issuemap.domain.issue.service.SubIssueService;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +35,7 @@ public class SubIssueController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{issueId}")
+    @GetMapping("/issue/{issueId}")
     public ResponseEntity<List<SubIssueResponseDto>> getSubIssuesByIssue(
             @PathVariable Long issueId
     ) {
@@ -47,6 +48,14 @@ public class SubIssueController {
             @RequestBody SubIssueUpdateRequestDto subIssueUpdateRequestDto
     ) {
         SubIssueResponseDto response = subIssueService.updateSubIssue(subIssueUpdateRequestDto);
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping
+    public ResponseEntity<SubIssueResponseDto> patchSubIssue(
+            @RequestBody SubIssueStatusUpdateRequestDto subIssueStatusUpdateRequestDto
+    ) {
+        SubIssueResponseDto response = subIssueService.updateSubIssueStatus(subIssueStatusUpdateRequestDto);
         return ResponseEntity.ok(response);
     }
 }

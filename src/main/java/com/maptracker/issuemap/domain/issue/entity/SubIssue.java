@@ -59,4 +59,8 @@ public class SubIssue extends BaseTimeEntity {
     public void updateContent(String content) {
         this.content = content;
     }
+
+    public void updateStatus(IssueStatus issueStatus) {
+        this.issueStatus = issueStatus;
+    }
 }

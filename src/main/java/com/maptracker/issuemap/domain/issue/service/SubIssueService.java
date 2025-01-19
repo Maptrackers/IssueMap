@@ -2,8 +2,10 @@ package com.maptracker.issuemap.domain.issue.service;
 
 import com.maptracker.issuemap.domain.issue.dto.subissue.SubIssueCreateRequestDto;
 import com.maptracker.issuemap.domain.issue.dto.subissue.SubIssueResponseDto;
+import com.maptracker.issuemap.domain.issue.dto.subissue.SubIssueStatusUpdateRequestDto;
 import com.maptracker.issuemap.domain.issue.dto.subissue.SubIssueUpdateRequestDto;
 import com.maptracker.issuemap.domain.issue.entity.Issue;
+import com.maptracker.issuemap.domain.issue.entity.IssueStatus;
 import com.maptracker.issuemap.domain.issue.entity.SubIssue;
 import com.maptracker.issuemap.domain.issue.exception.IssueCustomException;
 import com.maptracker.issuemap.domain.issue.exception.IssueErrorCode;
@@ -68,4 +70,18 @@ public class SubIssueService {
         return SubIssueResponseDto.fromEntity(subIssue);
     }
 
+
+    public SubIssueResponseDto updateSubIssueStatus(SubIssueStatusUpdateRequestDto dto) {
+        SubIssue subIssue = subIssueRepository.findById(dto.subIssueId())
+                .orElseThrow(() -> new SubIssueCustomException(SubIssueErrorCode.SUBISSUE_NOT_FOUND));
+
+        try {
+            IssueStatus issueStatus = IssueStatus.valueOf(dto.status().toUpperCase());
+            subIssue.updateStatus(issueStatus);
+        } catch (IllegalArgumentException e) {
+            throw new SubIssueCustomException(SubIssueErrorCode.INVALID_SUBISSUE_TYPE);
+        }
+        subIssueRepository.save(subIssue);
+        return SubIssueResponseDto.fromEntity(subIssue);
+    }
 }
