@@ -35,12 +35,12 @@ public class SubIssue extends BaseTimeEntity {
     private IssueStatus issueStatus;
 
     @Builder
-    private SubIssue(User user, Issue issue, String title, String content, IssueStatus status) {
+    private SubIssue(User user, Issue issue, String title, String content, IssueStatus issueStatus) {
         this.user = user;
         this.issue = issue;
         this.title = title;
         this.content = content;
-        this.status = status;
+        this.issueStatus = issueStatus;
     }
 
     public static SubIssue create(User user, Issue issue, String title) {
@@ -52,5 +52,11 @@ public class SubIssue extends BaseTimeEntity {
     }
 
 
+    public void updateTitle(String title) {
+        this.title = title;
+    }
 
+    public void updateContent(String content) {
+        this.content = content;
+    }
 }

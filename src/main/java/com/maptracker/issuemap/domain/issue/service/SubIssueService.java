@@ -2,6 +2,7 @@ package com.maptracker.issuemap.domain.issue.service;
 
 import com.maptracker.issuemap.domain.issue.dto.subissue.SubIssueCreateRequestDto;
 import com.maptracker.issuemap.domain.issue.dto.subissue.SubIssueResponseDto;
+import com.maptracker.issuemap.domain.issue.dto.subissue.SubIssueUpdateRequestDto;
 import com.maptracker.issuemap.domain.issue.entity.Issue;
 import com.maptracker.issuemap.domain.issue.entity.SubIssue;
 import com.maptracker.issuemap.domain.issue.exception.IssueCustomException;
@@ -52,5 +53,19 @@ public class SubIssueService {
                 .collect(Collectors.toList());
     }
 
+    public SubIssueResponseDto updateSubIssue(SubIssueUpdateRequestDto dto) {
+        SubIssue subIssue = subIssueRepository.findById(dto.subIssueId())
+                .orElseThrow(() -> new SubIssueCustomException(SubIssueErrorCode.SUBISSUE_NOT_FOUND));
+
+        if (dto.title() != null && !dto.title().isBlank()) {
+            subIssue.updateTitle(dto.title());
+        }
+        if (dto.content() != null) {
+            subIssue.updateContent(dto.content());
+        }
+
+        subIssueRepository.save(subIssue);
+        return SubIssueResponseDto.fromEntity(subIssue);
+    }
 
 }

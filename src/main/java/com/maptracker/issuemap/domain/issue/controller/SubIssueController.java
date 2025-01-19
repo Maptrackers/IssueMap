@@ -3,6 +3,7 @@ package com.maptracker.issuemap.domain.issue.controller;
 
 import com.maptracker.issuemap.domain.issue.dto.subissue.SubIssueResponseDto;
 import com.maptracker.issuemap.domain.issue.dto.subissue.SubIssueCreateRequestDto;
+import com.maptracker.issuemap.domain.issue.dto.subissue.SubIssueUpdateRequestDto;
 import com.maptracker.issuemap.domain.issue.service.SubIssueService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +39,14 @@ public class SubIssueController {
             @PathVariable Long issueId
     ) {
         List<SubIssueResponseDto> response = subIssueService.getSubIssueByIssue(issueId);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping
+    public ResponseEntity<SubIssueResponseDto> updateSubIssue(
+            @RequestBody SubIssueUpdateRequestDto subIssueUpdateRequestDto
+    ) {
+        SubIssueResponseDto response = subIssueService.updateSubIssue(subIssueUpdateRequestDto);
         return ResponseEntity.ok(response);
     }
 }
