@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/subissues")
 @RequiredArgsConstructor
@@ -28,6 +30,14 @@ public class SubIssueController {
             @PathVariable Long subIssueId
     ) {
         SubIssueResponseDto response = subIssueService.getSubIssueById(subIssueId);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{issueId}")
+    public ResponseEntity<List<SubIssueResponseDto>> getSubIssuesByIssue(
+            @PathVariable Long issueId
+    ) {
+        List<SubIssueResponseDto> response = subIssueService.getSubIssueByIssue(issueId);
         return ResponseEntity.ok(response);
     }
 }

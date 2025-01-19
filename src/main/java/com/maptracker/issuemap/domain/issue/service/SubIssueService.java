@@ -16,6 +16,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -41,4 +44,13 @@ public class SubIssueService {
                 .orElseThrow(() -> new SubIssueCustomException(SubIssueErrorCode.SUBISSUE_NOT_FOUND));;
         return SubIssueResponseDto.fromEntity(subIssue);
     }
+
+    public List<SubIssueResponseDto> getSubIssueByIssue(Long issueId) {
+        List<SubIssue> subIssues = subIssueRepository.findByIssueId(issueId);
+        return subIssues.stream()
+                .map(SubIssueResponseDto::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+
 }
