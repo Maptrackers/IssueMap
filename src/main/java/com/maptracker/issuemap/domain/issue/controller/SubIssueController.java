@@ -22,4 +22,12 @@ public class SubIssueController {
         SubIssueCreateRequestDto response = subIssueService.create(subIssueCreateRequestDto, userId);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/{subIssueId}")
+    public ResponseEntity<SubIssueResponseDto> getSubIssueById(
+            @PathVariable Long subIssueId
+    ) {
+        SubIssueResponseDto response = subIssueService.getSubIssueById(subIssueId);
+        return ResponseEntity.ok(response);
+    }
 }
