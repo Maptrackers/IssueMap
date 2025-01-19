@@ -5,7 +5,7 @@ import com.maptracker.issuemap.domain.comment.dto.IssueCommentResponseDto;
 import com.maptracker.issuemap.domain.comment.entity.IssueComment;
 import com.maptracker.issuemap.domain.comment.exception.MyErrorCode;
 import com.maptracker.issuemap.domain.comment.exception.MyException;
-import com.maptracker.issuemap.domain.comment.repository.CommentRepository;
+import com.maptracker.issuemap.domain.comment.repository.IssueCommentRepository;
 import com.maptracker.issuemap.domain.issue.entity.Issue;
 import com.maptracker.issuemap.domain.issue.repository.IssueRepository;
 import com.maptracker.issuemap.domain.user.entity.User;
@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class IssueCommentService {
-    private final CommentRepository commentRepository;
+    private final IssueCommentRepository commentRepository;
     private final IssueRepository issueRepository;
     private final UserRepository userRepository;
 

@@ -3,7 +3,7 @@ package com.maptracker.issuemap.domain.comment.service;
 
 import com.maptracker.issuemap.domain.comment.dto.IssueCommentResponseDto;
 import com.maptracker.issuemap.domain.comment.entity.IssueComment;
-import com.maptracker.issuemap.domain.comment.repository.CommentRepository;
+import com.maptracker.issuemap.domain.comment.repository.IssueCommentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,7 +13,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class IssueCommentQueryService {
-    private final CommentRepository commentRepository;
+    private final IssueCommentRepository commentRepository;
 
     @Transactional(readOnly = true)
     public List<IssueCommentResponseDto> getCommentsByIssue(Long issueId) {
