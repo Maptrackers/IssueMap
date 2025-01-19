@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import static com.maptracker.issuemap.domain.issue.entity.IssueStatus.*;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -32,6 +34,7 @@ public class SubIssue extends BaseTimeEntity {
     private String content;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private IssueStatus issueStatus;
 
     @Builder
@@ -48,6 +51,8 @@ public class SubIssue extends BaseTimeEntity {
                 .user(user)
                 .issue(issue)
                 .title(title)
+                .content(null)
+                .issueStatus(BEFORE)
                 .build();
     }
 

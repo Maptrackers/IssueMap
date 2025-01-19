@@ -7,8 +7,6 @@ import com.maptracker.issuemap.domain.issue.dto.subissue.SubIssueUpdateRequestDt
 import com.maptracker.issuemap.domain.issue.entity.Issue;
 import com.maptracker.issuemap.domain.issue.entity.IssueStatus;
 import com.maptracker.issuemap.domain.issue.entity.SubIssue;
-import com.maptracker.issuemap.domain.issue.exception.IssueCustomException;
-import com.maptracker.issuemap.domain.issue.exception.IssueErrorCode;
 import com.maptracker.issuemap.domain.issue.exception.SubIssueCustomException;
 import com.maptracker.issuemap.domain.issue.exception.SubIssueErrorCode;
 import com.maptracker.issuemap.domain.issue.repository.IssueRepository;

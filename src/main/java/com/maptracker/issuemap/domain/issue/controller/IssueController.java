@@ -4,6 +4,7 @@ import com.maptracker.issuemap.domain.issue.dto.issue.*;
 import com.maptracker.issuemap.domain.issue.service.IssueService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,13 +14,14 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/issues")
 @RequiredArgsConstructor
+@Tag(name = "Issue Controller", description = "이슈 API")
 public class IssueController {
 
     private final IssueService issueService;
 
     @Operation(
             summary = "이슈 생성 API",
-            description = "새로운 이슈를 생성하고, 생성된 이슈 정보를 반환합니다.",
+            description = "새로운 이슈를 생성하고, 생성된 이슈 정보를 반환",
             responses = {
                     @ApiResponse(responseCode = "200", description = "이슈 생성 성공"),
                     @ApiResponse(responseCode = "400", description = "유효하지 않은 요청 데이터")
@@ -34,7 +36,7 @@ public class IssueController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "이슈 상세 조회 API", description = "특정 이슈의 상세 정보를 조회합니다.",
+    @Operation(summary = "이슈 상세 조회 API", description = "특정 이슈의 상세 정보를 조회",
             responses = {
                     @ApiResponse(responseCode = "200", description = "이슈 조회 성공"),
                     @ApiResponse(responseCode = "404", description = "이슈를 찾을 수 없음")
@@ -45,7 +47,7 @@ public class IssueController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "프로젝트별 이슈 목록 조회 API", description = "특정 프로젝트에 속한 이슈 목록을 조회합니다.",
+    @Operation(summary = "프로젝트별 이슈 목록 조회 API", description = "특정 프로젝트의 이슈 목록 조회",
             responses = {
                     @ApiResponse(responseCode = "200", description = "이슈 목록 조회 성공"),
                     @ApiResponse(responseCode = "404", description = "프로젝트를 찾을 수 없음")
@@ -56,7 +58,7 @@ public class IssueController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "이슈 업데이트 API", description = "특정 이슈의 정보를 업데이트합니다.",
+    @Operation(summary = "이슈 업데이트 API", description = "특정 이슈 정보 업데이트",
             responses = {
                     @ApiResponse(responseCode = "200", description = "이슈 업데이트 성공"),
                     @ApiResponse(responseCode = "404", description = "이슈를 찾을 수 없음")
@@ -67,7 +69,7 @@ public class IssueController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "이슈 상태 업데이트 API", description = "특정 이슈의 상태를 업데이트합니다.",
+    @Operation(summary = "이슈 상태 업데이트 API", description = "특정 이슈의 상태 업데이트",
             responses = {
                     @ApiResponse(responseCode = "200", description = "이슈 상태 업데이트 성공"),
                     @ApiResponse(responseCode = "404", description = "이슈를 찾을 수 없음")
@@ -78,7 +80,7 @@ public class IssueController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "이슈 삭제 API", description = "특정 이슈를 삭제합니다.",
+    @Operation(summary = "이슈 삭제 API", description = "특정 이슈 삭제",
             responses = {
                     @ApiResponse(responseCode = "200", description = "이슈 삭제 성공"),
                     @ApiResponse(responseCode = "404", description = "이슈를 찾을 수 없음")
