@@ -69,9 +69,9 @@ public class IssueService {
         if (dto.content() != null) {
             issue.updateContent(dto.content());
         }
-        if (dto.issueTyp() != null) {
+        if (dto.issueType() != null) {
             try {
-                IssueType issueType = IssueType.valueOf(dto.issueTyp().toUpperCase());
+                IssueType issueType = IssueType.valueOf(dto.issueType().toUpperCase());
                 issue.updateIssueType(issueType);
             } catch (IllegalArgumentException e) {
                 throw new IssueCustomException(IssueErrorCode.INVALID_ISSUE_TYPE);
@@ -101,7 +101,7 @@ public class IssueService {
         Issue issue = issueRepository.findById(issueId)
                 .orElseThrow(() -> new IllegalArgumentException("Issue not found with id: " + issueId));
 
-        issueRepository.deleteById(issueId);
+        issueRepository.delete(issue);
 
         return IssueResponseDto.fromEntity(issue);
     }

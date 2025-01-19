@@ -39,6 +39,7 @@ public class Issue extends BaseTimeEntity {
     private IssueType issueType;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private IssueStatus issueStatus;
 
     @Builder

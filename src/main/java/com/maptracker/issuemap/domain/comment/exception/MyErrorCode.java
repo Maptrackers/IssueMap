@@ -10,6 +10,7 @@ public enum MyErrorCode {
     USER_NOT_FOUND("해당 유저가 존재하지 않습니다."),
     ISSUE_MISMATCH( "댓글이 이슈와 일치하지 않습니다."),
     UNAUTHORIZED_USER("댓글 작성자가 아닙니다."),
+    PARENT_COMMENT_NOT_FOUND("부모 댓글을 찾을 수 없습니다."),
     COMMENT_NOT_FOUND( "해당 댓글을 찾을 수 없습니다.");
 
     private final String message;

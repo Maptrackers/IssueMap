@@ -5,6 +5,6 @@ public record IssueUpdateRequestDto(
         Long issueId,
         String title,
         String content,
-        String issueTyp
+        String issueType
 ) {
 }
