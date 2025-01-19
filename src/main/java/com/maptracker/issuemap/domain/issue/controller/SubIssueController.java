@@ -58,4 +58,12 @@ public class SubIssueController {
         SubIssueResponseDto response = subIssueService.updateSubIssueStatus(subIssueStatusUpdateRequestDto);
         return ResponseEntity.ok(response);
     }
+
+    @DeleteMapping("/{subIssueId}")
+    public ResponseEntity<SubIssueResponseDto> deleteSubIssue(
+            @PathVariable Long subIssueId
+    ) {
+        SubIssueResponseDto response = subIssueService.deleteSubIssue(subIssueId);
+        return ResponseEntity.ok(response);
+    }
 }

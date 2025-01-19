@@ -101,7 +101,7 @@ public class IssueService {
         Issue issue = issueRepository.findById(issueId)
                 .orElseThrow(() -> new IllegalArgumentException("Issue not found with id: " + issueId));
 
-        issueRepository.deleteById(issueId);
+        issueRepository.delete(issue);
 
         return IssueResponseDto.fromEntity(issue);
     }

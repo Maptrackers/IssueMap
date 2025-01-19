@@ -84,4 +84,13 @@ public class SubIssueService {
         subIssueRepository.save(subIssue);
         return SubIssueResponseDto.fromEntity(subIssue);
     }
+
+    public SubIssueResponseDto deleteSubIssue(Long subIssueId) {
+        SubIssue subIssue = subIssueRepository.findById(subIssueId)
+                .orElseThrow(() -> new SubIssueCustomException(SubIssueErrorCode.SUBISSUE_NOT_FOUND));
+
+        subIssueRepository.delete(subIssue);
+
+        return SubIssueResponseDto.fromEntity(subIssue);
+    }
 }
