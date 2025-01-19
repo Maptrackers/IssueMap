@@ -2,7 +2,7 @@ package com.maptracker.issuemap.domain.comment.service;
 
 import com.maptracker.issuemap.domain.comment.dto.IssueCommentResponseDto;
 import com.maptracker.issuemap.domain.comment.entity.IssueComment;
-import com.maptracker.issuemap.domain.comment.repository.CommentRepository;
+import com.maptracker.issuemap.domain.comment.repository.IssueCommentRepository;
 import com.maptracker.issuemap.domain.issue.entity.Issue;
 import com.maptracker.issuemap.domain.issue.repository.IssueRepository;
 import com.maptracker.issuemap.domain.user.entity.User;
@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import static org.junit.jupiter.api.Assertions.*;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
@@ -27,7 +27,7 @@ class IssueCommentQueryServiceTest {
     @InjectMocks
     private IssueCommentQueryService commentQueryService;
     @Mock
-    private CommentRepository commentRepository;
+    private IssueCommentRepository commentRepository;
 
     @Mock
     private IssueRepository issueRepository;
