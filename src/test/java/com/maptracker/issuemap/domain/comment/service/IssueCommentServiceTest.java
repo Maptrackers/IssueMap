@@ -4,7 +4,7 @@ import com.maptracker.issuemap.domain.comment.dto.IssueCommentResponseDto;
 import com.maptracker.issuemap.domain.comment.entity.IssueComment;
 import com.maptracker.issuemap.domain.comment.exception.MyErrorCode;
 import com.maptracker.issuemap.domain.comment.exception.MyException;
-import com.maptracker.issuemap.domain.comment.repository.CommentRepository;
+import com.maptracker.issuemap.domain.comment.repository.IssueCommentRepository;
 import com.maptracker.issuemap.domain.issue.entity.Issue;
 import com.maptracker.issuemap.domain.issue.repository.IssueRepository;
 import com.maptracker.issuemap.domain.user.entity.User;
@@ -28,7 +28,7 @@ class IssueCommentServiceTest {
     private IssueCommentService commentService; // 테스트 대상 클래스
 
     @Mock
-    private CommentRepository commentRepository;
+    private IssueCommentRepository commentRepository;
 
     @Mock
     private IssueRepository issueRepository;
