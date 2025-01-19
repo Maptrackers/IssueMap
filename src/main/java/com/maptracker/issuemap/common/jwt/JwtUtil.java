@@ -19,6 +19,15 @@ public class JwtUtil {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
+    public Long getUserId(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("id", Long.class);
+    }
+
     public String getUserEmail(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)
@@ -38,8 +47,9 @@ public class JwtUtil {
                 .before(new Date());
     }
 
-    public String createJwt(String username, Long expiredMs) {
+    public String createJwt(Long userId, String username, Long expiredMs) {
         var claims = Jwts.claims();
+        claims.put("id",  userId);
         claims.put("email", username);
 
         return Jwts.builder()

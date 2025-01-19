@@ -2,7 +2,7 @@ package com.maptracker.issuemap.common.jwt;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.maptracker.issuemap.domain.user.dto.CustomUserDetails;
+import com.maptracker.issuemap.domain.user.dto.UserResponse.Login;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -34,6 +35,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException {
+
         String email;
         String password;
 
@@ -58,11 +60,14 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
                                             Authentication authResult) throws IOException, ServletException {
+
         CustomUserDetails customUserDetails = (CustomUserDetails) authResult.getPrincipal();
+
+        Long userId = customUserDetails.getUserId();
         String userEmail = customUserDetails.getUsername();
 
-        String accessToken = jwtUtil.createJwt(userEmail, 60 * 60L * 10L);
-        String refreshToken = jwtUtil.createJwt(userEmail, 60 * 60 * 24L * 7L);
+        String accessToken = jwtUtil.createJwt(userId, userEmail, 60 * 60L * 10L);
+        String refreshToken = jwtUtil.createJwt(userId, userEmail, 60 * 60 * 24L * 7L);
 
         Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
         accessTokenCookie.setHttpOnly(true);
@@ -79,6 +84,15 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         response.addCookie(accessTokenCookie);
         response.addCookie(refreshTokenCookie);
+
+
+
+        Login login = new Login(userId, userEmail, accessToken);
+        ResponseEntity<Login> loginUserApiResponse = ResponseEntity.ok(login);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        response.setContentType("application/json");
+        objectMapper.writeValue(response.getOutputStream(), loginUserApiResponse);
     }
 
     @Override

@@ -6,6 +6,7 @@ import com.maptracker.issuemap.common.jwt.LoginFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -62,7 +63,7 @@ public class SecurityConfig {
                         // 특정 API 경로 허용
                         .requestMatchers("/api/teams/**").permitAll()
                         .requestMatchers("/api/projects/**").permitAll()
-                        .requestMatchers("/api/users/signup").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
                         .requestMatchers("/api/issues/**").permitAll()
                         .requestMatchers("/api/subissues/**").permitAll()
                         .requestMatchers("/api/users/**").permitAll()

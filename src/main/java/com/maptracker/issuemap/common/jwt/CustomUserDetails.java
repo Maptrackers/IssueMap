@@ -1,4 +1,4 @@
-package com.maptracker.issuemap.domain.user.dto;
+package com.maptracker.issuemap.common.jwt;
 
 import com.maptracker.issuemap.domain.user.entity.User;
 import java.util.ArrayList;
@@ -12,6 +12,10 @@ public class CustomUserDetails implements UserDetails {
 
     public CustomUserDetails(User user) {
         this.user = user;
+    }
+
+    public Long getUserId() {
+        return user.getId();
     }
 
     @Override
