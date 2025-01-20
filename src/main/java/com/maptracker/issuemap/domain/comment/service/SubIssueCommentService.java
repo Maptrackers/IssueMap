@@ -97,14 +97,15 @@ public class SubIssueCommentService {
 
     // 대댓글 생성
     @Transactional
-    public IssueCommentResponseDto createReply(Long issueId, Long parentCommentId, IssueCommentCreateDto requestDto, Long userId) {
+    public IssueCommentResponseDto createReply(Long issueId, Long parentCommentId, IssueCommentCreateDto requestDto, CustomUserDetails userDetails) {
         // 1. 이슈 조회 및 존재 여부 확인
         SubIssue issue = subIssueRepository.findById(issueId)
                 .orElseThrow(() -> new MyException(MyErrorCode.ISSUE_NOT_FOUND));
 
         // 2. 유저 조회 및 존재 여부 확인
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new MyException(MyErrorCode.USER_NOT_FOUND));
+        User authenticatedUser = userDetails.getUser();
+//        User user = userRepository.findById(userId)
+//                .orElseThrow(() -> new MyException(MyErrorCode.USER_NOT_FOUND));
 
         // 3. 부모 댓글 조회 및 존재 여부 확인
         SubIssueComment parentComment = subIssueCommentRepository.findById(parentCommentId)
@@ -116,7 +117,7 @@ public class SubIssueCommentService {
         }
         SubIssueComment reply = SubIssueComment.builder()
                 .content(requestDto.getContent())
-                .user(user)
+                .user(authenticatedUser)
                 .subIssue(issue)
                 .parentComment(parentComment)
                 .build();

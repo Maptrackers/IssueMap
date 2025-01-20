@@ -86,10 +86,11 @@ public class SubIssueCommentController {
             @PathVariable Long subIssueId,
             @PathVariable Long parentCommentId,
             @RequestBody IssueCommentCreateDto requestDto,
-            @RequestParam Long userId
+//            @RequestParam Long userId
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         log.info("서브 이슈 대댓글 생성 호출");
-        IssueCommentResponseDto response = commentService.createReply(subIssueId, parentCommentId, requestDto, userId);
+        IssueCommentResponseDto response = commentService.createReply(subIssueId, parentCommentId, requestDto, userDetails);
         return ResponseEntity.ok(response);
     }
 }
