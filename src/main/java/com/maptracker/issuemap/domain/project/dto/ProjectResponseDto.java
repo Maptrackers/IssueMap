@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class ProjectResponseDto {
     @Schema(description = "프로젝트 ID", example = "1")
-    private Long id;
+    private Long projectId;
     @Schema(description = "프로젝트 이름", example = "IssueMap")
     private String projectName;
     @Schema(description = "생성일", example = "2025.01.01")

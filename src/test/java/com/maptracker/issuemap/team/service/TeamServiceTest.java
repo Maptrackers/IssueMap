@@ -35,7 +35,7 @@ class TeamServiceTest {
         // teamRepository.save() 메서드의 동작을 Mocking
         when(teamRepository.save(any(Team.class))).thenAnswer(invocation -> {
             Team savedTeam = invocation.getArgument(0);
-            savedTeam.setId(1L); // Mock으로 ID 설정
+            savedTeam.setTeamId(1L); // Mock으로 ID 설정
             return savedTeam;
         });
     }
@@ -47,7 +47,7 @@ class TeamServiceTest {
                 .teamName("Maptrakers")
                 .memberEmails(Arrays.asList("member1@example.com", "member2@example.com"))
                 .build();
-        Team team = Team.builder()
+        Team savedTeam = Team.builder()
                 .teamName("Maptrakers")
                 .memberEmails(Arrays.asList("member1@example.com", "member2@example.com"))
                 .build();
@@ -57,7 +57,7 @@ class TeamServiceTest {
 
         // Then
         assertNotNull(result);
-        assertEquals(1L, result.getId());
+        assertEquals(1L, result.getTeamId());
         assertEquals("Maptrakers", result.getTeamName());
         assertEquals(Arrays.asList("member1@example.com", "member2@example.com"), result.getMemberEmails());
 
@@ -74,7 +74,7 @@ class TeamServiceTest {
                 .build();
 
         when(teamRepository.findById(1L)).thenAnswer(invocation -> {
-            team.setId(1L);
+            team.setTeamId(1L);
             return Optional.of(team);
         });
 
@@ -83,7 +83,7 @@ class TeamServiceTest {
 
         // Then
         assertNotNull(result);
-        assertEquals(1L, result.getId());
+        assertEquals(1L, result.getTeamId());
         assertEquals("Maptrakers", result.getTeamName());
         assertEquals(Arrays.asList("member1@example.com", "member2@example.com"), result.getMemberEmails());
 
@@ -104,7 +104,7 @@ class TeamServiceTest {
                 .build();
 
         when(teamRepository.findById(1L)).thenAnswer(invocation -> {
-            existingTeam.setId(1L);
+            existingTeam.setTeamId(1L);
             return Optional.of(existingTeam);
         });
 
@@ -113,7 +113,7 @@ class TeamServiceTest {
 
         // Then
         assertNotNull(result);
-        assertEquals(1L, result.getId());
+        assertEquals(1L, result.getTeamId());
         assertEquals("Updated Team", result.getTeamName());
         assertEquals(Arrays.asList("member3@example.com", "member4@example.com"), result.getMemberEmails());
 
