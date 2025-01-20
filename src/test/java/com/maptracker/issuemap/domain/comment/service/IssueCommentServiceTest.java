@@ -125,20 +125,22 @@ class IssueCommentServiceTest {
         // Given
         Long issueId = 1L;
         Long commentId = 1L;
-        Long userId = 1L;
+//        Long userId = 1L;
 
         IssueComment comment = mock(IssueComment.class);
         Issue issue = mock(Issue.class);
         User user = mock(User.class);
 
+        CustomUserDetails userDetails = new CustomUserDetails(user);
+
         given(commentRepository.findById(commentId)).willReturn(Optional.of(comment));
         given(comment.getIssue()).willReturn(issue);
         given(issue.getId()).willReturn(issueId);
         given(comment.getUser()).willReturn(user);
-        given(user.getId()).willReturn(userId);
+        given(user.getId()).willReturn(1L);
 
         // When
-        commentService.deleteComment(issueId, commentId, userId);
+        commentService.deleteComment(issueId, commentId, userDetails);
 
         // Then
         verify(comment).markDeleted(); // Soft delete 호출 확인
@@ -151,20 +153,134 @@ class IssueCommentServiceTest {
         // Given
         Long issueId = 1L;
         Long commentId = 1L;
-        Long userId = 2L; // 다른 사용자 ID
+//        Long userId = 2L; // 다른 사용자 ID
 
         IssueComment comment = mock(IssueComment.class);
         Issue issue = mock(Issue.class);
-        User anotherUser = mock(User.class);
+        User commentOwner = mock(User.class);
+        User unauthorizedUser = mock(User.class);
+
+        CustomUserDetails userDetails = new CustomUserDetails(unauthorizedUser);
 
         given(commentRepository.findById(commentId)).willReturn(Optional.of(comment));
         given(comment.getIssue()).willReturn(issue);
         given(issue.getId()).willReturn(issueId);
-        given(comment.getUser()).willReturn(anotherUser);
-        given(anotherUser.getId()).willReturn(1L); // 댓글 작성자는 다른 사용자
+        given(comment.getUser()).willReturn(commentOwner);
+        given(commentOwner.getId()).willReturn(1L); // 댓글 작성자는 ID 1인 사용자
+        given(unauthorizedUser.getId()).willReturn(2L); // 인증된 사용자는 ID 2인 사용자
 
         // When & Then
-        MyException exception = assertThrows(MyException.class, () -> commentService.deleteComment(issueId, commentId, userId));
+        MyException exception = assertThrows(MyException.class, () -> commentService.deleteComment(issueId, commentId, userDetails));
         assertThat(exception.getErrorCode()).isEqualTo(MyErrorCode.UNAUTHORIZED_USER);
+    }
+
+    // 대댓글 생성 관련 테스트
+
+    @Test
+    @DisplayName("대댓글 생성 성공")
+    void createReplySuccess() {
+        // Given
+        Long issueId = 1L;
+        Long parentCommentId = 1L;
+        IssueCommentCreateDto requestDto = new IssueCommentCreateDto(null, null, "대댓글 내용");
+
+        // Mock 데이터 설정
+        Issue issue = mock(Issue.class);
+        User user = mock(User.class);
+        IssueComment parentComment = mock(IssueComment.class);
+        IssueComment savedReply = mock(IssueComment.class);
+
+        CustomUserDetails userDetails = new CustomUserDetails(user);
+
+        given(issueRepository.findById(issueId)).willReturn(Optional.of(issue));
+        given(commentRepository.findById(parentCommentId)).willReturn(Optional.of(parentComment));
+        given(parentComment.getIssue()).willReturn(issue);
+        given(commentRepository.save(any(IssueComment.class))).willReturn(savedReply);
+
+        given(savedReply.getId()).willReturn(1L);
+        given(savedReply.getContent()).willReturn("대댓글 내용");
+        given(savedReply.getUser()).willReturn(user);
+        given(savedReply.getIssue()).willReturn(issue);
+        given(savedReply.getParentComment()).willReturn(parentComment);
+
+        // When
+        IssueCommentResponseDto response = commentService.createReply(issueId, parentCommentId, requestDto, userDetails);
+
+        // Then
+        assertAll(
+                () -> assertNotNull(response),
+                () -> assertThat(response.getContent()).isEqualTo("대댓글 내용"),
+                () -> assertThat(response.getUserId()).isEqualTo(user.getId()),
+                () -> verify(commentRepository, times(1)).save(any(IssueComment.class)) // 저장 호출 확인
+        );
+    }
+
+    @Test
+    @DisplayName("이슈가 존재하지 않을 때 예외 발생")
+    void createReplyWhenIssueNotFound() {
+        // Given
+        Long issueId = 1L;
+        Long parentCommentId = 1L;
+        IssueCommentCreateDto requestDto = new IssueCommentCreateDto(null, null, "대댓글 내용");
+
+        CustomUserDetails userDetails = new CustomUserDetails(mock(User.class));
+
+        given(issueRepository.findById(issueId)).willReturn(Optional.empty());
+
+        // When & Then
+        MyException exception = assertThrows(MyException.class, () ->
+                commentService.createReply(issueId, parentCommentId, requestDto, userDetails)
+        );
+
+        assertThat(exception.getErrorCode()).isEqualTo(MyErrorCode.ISSUE_NOT_FOUND);
+        verify(commentRepository, never()).save(any(IssueComment.class)); // 저장이 호출되지 않아야 함
+    }
+
+    @Test
+    @DisplayName("부모 댓글이 존재하지 않을 때 예외 발생")
+    void createReplyWhenParentCommentNotFound() {
+        // Given
+        Long issueId = 1L;
+        Long parentCommentId = 1L;
+        IssueCommentCreateDto requestDto = new IssueCommentCreateDto(null, null, "대댓글 내용");
+
+        CustomUserDetails userDetails = new CustomUserDetails(mock(User.class));
+        Issue issue = mock(Issue.class);
+
+        given(issueRepository.findById(issueId)).willReturn(Optional.of(issue));
+        given(commentRepository.findById(parentCommentId)).willReturn(Optional.empty());
+
+        // When & Then
+        MyException exception = assertThrows(MyException.class, () ->
+                commentService.createReply(issueId, parentCommentId, requestDto, userDetails)
+        );
+
+        assertThat(exception.getErrorCode()).isEqualTo(MyErrorCode.PARENT_COMMENT_NOT_FOUND);
+        verify(commentRepository, never()).save(any(IssueComment.class)); // 저장이 호출되지 않아야 함
+    }
+
+    @Test
+    @DisplayName("부모 댓글이 해당 이슈에 속하지 않을 때 예외 발생")
+    void createReplyWhenParentCommentNotInIssue() {
+        // Given
+        Long issueId = 1L;
+        Long parentCommentId = 1L;
+        IssueCommentCreateDto requestDto = new IssueCommentCreateDto(null, null, "대댓글 내용");
+
+        CustomUserDetails userDetails = new CustomUserDetails(mock(User.class));
+        Issue issue = mock(Issue.class);
+        IssueComment parentComment = mock(IssueComment.class);
+
+        given(issueRepository.findById(issueId)).willReturn(Optional.of(issue));
+        given(commentRepository.findById(parentCommentId)).willReturn(Optional.of(parentComment));
+        given(parentComment.getIssue()).willReturn(mock(Issue.class)); // 다른 이슈를 반환
+
+        // When & Then
+        MyException exception = assertThrows(MyException.class, () ->
+                commentService.createReply(issueId, parentCommentId, requestDto, userDetails)
+        );
+
+        assertThat(exception.getErrorCode()).isEqualTo(MyErrorCode.ISSUE_MISMATCH);
+        verify(commentRepository, never()).save(any(IssueComment.class)); // 저장이 호출되지 않아야 함
     }
 }
