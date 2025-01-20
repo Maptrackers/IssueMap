@@ -45,18 +45,21 @@ class IssueCommentQueryServiceTest {
         // Given
         Long issueId = 1L;
 
-        // Issue 객체 직접 생성
-        Issue issue = new Issue();
+        // Issue 객체 생성
+        Issue issue = Issue.builder()
+                .title("테스트 이슈")
+                .content("테스트 이슈 내용")
+                .build();
         ReflectionTestUtils.setField(issue, "id", issueId); // id 값 설정
 
-        // User 객체 직접 생성
-        User user1 = new User();
+        // User 객체 생성
+        User user1 = User.builder().build();
         ReflectionTestUtils.setField(user1, "id", 1L);
 
-        User user2 = new User();
+        User user2 = User.builder().build();
         ReflectionTestUtils.setField(user2, "id", 2L);
 
-        User user3 = new User();
+        User user3 = User.builder().build();
         ReflectionTestUtils.setField(user3, "id", 3L);
 
         IssueComment comment1 = IssueComment.builder()

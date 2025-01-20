@@ -17,8 +17,7 @@ public class IssueCommentCreateDto {
     private Long parentCommentId; // 부모 댓글 ID (없으면 null)
 
     @Builder
-    public IssueCommentCreateDto(Long issueId, Long parentCommentId, String content) {
-//        this.issueId = issueId;
+    public IssueCommentCreateDto( Long parentCommentId, String content) {
         this.parentCommentId = parentCommentId;
         this.content = content;
     }
