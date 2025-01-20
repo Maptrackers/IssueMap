@@ -34,10 +34,10 @@ public class ProjectService {
         Project savedProject = projectRepository.save(project);
 
         return ProjectResponseDto.builder()
-                .id(savedProject.getId())
+                .projectId(savedProject.getProjectId())
                 .projectName(savedProject.getProjectName())
                 .createdAt(savedProject.getCreatedAt())
-                .teamId(savedProject.getTeam().getId())
+                .teamId(savedProject.getTeam().getTeamId())
                 .teamName(savedProject.getTeam().getTeamName())
                 .build();
     }
@@ -47,10 +47,10 @@ public class ProjectService {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 프로젝트를 찾을 수 없습니다."));
         return ProjectResponseDto.builder()
-                .id(project.getId())
+                .projectId(project.getProjectId())
                 .projectName(project.getProjectName())
                 .createdAt(project.getCreatedAt())
-                .teamId(project.getTeam().getId())
+                .teamId(project.getTeam().getTeamId())
                 .teamName(project.getTeam().getTeamName())
                 .build();
     }
@@ -66,10 +66,10 @@ public class ProjectService {
         Project updatedProject = projectRepository.save(project);
 
         return ProjectResponseDto.builder()
-                .id(updatedProject.getId())
+                .projectId(updatedProject.getProjectId())
                 .projectName(updatedProject.getProjectName())
                 .createdAt(updatedProject.getCreatedAt())
-                .teamId(updatedProject.getTeam().getId())
+                .teamId(updatedProject.getTeam().getTeamId())
                 .teamName(updatedProject.getTeam().getTeamName())
                 .build();
     }

@@ -25,7 +25,7 @@ public class TeamService {
         Team savedTeam = teamRepository.save(team);
 
         return TeamResponseDto.builder()
-                .id(savedTeam.getId())
+                .teamId(savedTeam.getTeamId())
                 .teamName(savedTeam.getTeamName())
                 .memberEmails(savedTeam.getMemberEmails())
                 .build();
@@ -37,7 +37,7 @@ public class TeamService {
                 .orElseThrow(() -> new IllegalArgumentException("Team not found with id: " + teamId));
 
         return TeamResponseDto.builder()
-                .id(team.getId())
+                .teamId(team.getTeamId())
                 .teamName(team.getTeamName())
                 .memberEmails(team.getMemberEmails())
                 .build();
@@ -55,7 +55,7 @@ public class TeamService {
         Team updatedTeam = teamRepository.save(team); // 저장 후 반환
 
         return TeamResponseDto.builder()
-                .id(updatedTeam.getId())
+                .teamId(updatedTeam.getTeamId())
                 .teamName(updatedTeam.getTeamName())
                 .memberEmails(updatedTeam.getMemberEmails())
                 .build();

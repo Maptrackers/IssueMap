@@ -15,7 +15,7 @@ import java.util.List;
 public class TeamResponseDto {
 
     @Schema(description = "팀 ID", example = "1")
-    private Long id;
+    private Long teamId;
 
     @Schema(description = "팀 이름", example = "MapTrackers")
     private String teamName;
