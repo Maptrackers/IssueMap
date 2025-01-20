@@ -9,4 +9,5 @@ public interface IssueHistoryRepository extends JpaRepository<IssueHistory, Long
 
     List<IssueHistory> findByIssueId(Long issueId);
 
+    void deleteAllByIssueId(Long issueId);
 }

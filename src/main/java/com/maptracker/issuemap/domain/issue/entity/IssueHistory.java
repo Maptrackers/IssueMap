@@ -29,7 +29,6 @@ public class IssueHistory extends BaseTimeEntity {
     @Column(nullable = false)
     private String issueHistoryType;
 
-    @Column(nullable = false)
     private String detail;
 
     @Builder

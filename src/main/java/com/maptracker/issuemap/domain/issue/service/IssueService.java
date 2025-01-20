@@ -1,14 +1,12 @@
 package com.maptracker.issuemap.domain.issue.service;
 
-import com.maptracker.issuemap.domain.issue.dto.issue.IssueCreateRequestDto;
-import com.maptracker.issuemap.domain.issue.dto.issue.IssueResponseDto;
-import com.maptracker.issuemap.domain.issue.dto.issue.IssueStatusUpdateRequestDto;
-import com.maptracker.issuemap.domain.issue.dto.issue.IssueUpdateRequestDto;
+import com.maptracker.issuemap.domain.issue.dto.issue.*;
 import com.maptracker.issuemap.domain.issue.entity.Issue;
+import com.maptracker.issuemap.domain.issue.entity.IssueHistory;
 import com.maptracker.issuemap.domain.issue.entity.IssueStatus;
-import com.maptracker.issuemap.domain.issue.entity.IssueType;
 import com.maptracker.issuemap.domain.issue.exception.IssueCustomException;
 import com.maptracker.issuemap.domain.issue.exception.IssueErrorCode;
+import com.maptracker.issuemap.domain.issue.repository.IssueHistoryRepository;
 import com.maptracker.issuemap.domain.issue.repository.IssueRepository;
 import com.maptracker.issuemap.domain.project.entity.Project;
 import com.maptracker.issuemap.domain.project.repository.ProjectRepository;
@@ -28,6 +26,7 @@ public class IssueService {
 
     private final UserRepository userRepository;
     private final IssueRepository issueRepository;
+    private final IssueHistoryRepository issueHistoryRepository;
     private final ProjectRepository projectRepository;
 
     public IssueCreateRequestDto createIssue(IssueCreateRequestDto dto, Long userId) {
@@ -39,6 +38,9 @@ public class IssueService {
         try {
             Issue issue = Issue.create(user, project, dto.title(), dto.issueType());
             issueRepository.save(issue);
+
+            IssueHistory issueHistory = IssueHistory.create(user, issue, "이슈 생성함", null);
+            issueHistoryRepository.save(issueHistory);
         } catch (IllegalArgumentException e) {
             throw new IssueCustomException(IssueErrorCode.INVALID_ISSUE_TYPE);
         }
@@ -59,39 +61,55 @@ public class IssueService {
                 .collect(Collectors.toList());
     }
 
-    public IssueResponseDto updateIssue(IssueUpdateRequestDto dto) {
+    public IssueResponseDto updateIssueTitle(IssueUpdateTitleRequestDto dto, Long userId) {
+        User user = userRepository.findById(userId).orElseThrow();
         Issue issue = issueRepository.findById(dto.issueId())
                 .orElseThrow(() -> new IssueCustomException(IssueErrorCode.ISSUE_NOT_FOUND));
 
-        if (dto.title() != null && !dto.title().isBlank()) {
-            issue.updateTitle(dto.title());
-        }
-        if (dto.content() != null) {
-            issue.updateContent(dto.content());
-        }
-        if (dto.issueType() != null) {
-            try {
-                IssueType issueType = IssueType.valueOf(dto.issueType().toUpperCase());
-                issue.updateIssueType(issueType);
-            } catch (IllegalArgumentException e) {
-                throw new IssueCustomException(IssueErrorCode.INVALID_ISSUE_TYPE);
-            }
-        }
+        String beforeTitle = issue.getTitle();
 
+        issue.updateTitle(dto.title());
+
+        IssueHistory issueHistory = IssueHistory.create(user, issue, "제목 변경됨", beforeTitle + " -> "+ dto.title());
+
+        issueHistoryRepository.save(issueHistory);
         issueRepository.save(issue);
         return IssueResponseDto.fromEntity(issue);
     }
 
-    public IssueResponseDto updateIssueStatus(IssueStatusUpdateRequestDto dto) {
+    public IssueResponseDto updateIssueContent(IssueUpdateContentRequestDto dto, Long userId) {
+        User user = userRepository.findById(userId).orElseThrow();
         Issue issue = issueRepository.findById(dto.issueId())
                 .orElseThrow(() -> new IssueCustomException(IssueErrorCode.ISSUE_NOT_FOUND));
+
+        String beforeContent = issue.getContent();
+
+        issue.updateContent(dto.content());
+
+        IssueHistory issueHistory = IssueHistory.create(user, issue, "내용 업데이트됨", beforeContent + " -> "+ dto.content());
+
+        issueHistoryRepository.save(issueHistory);
+        issueRepository.save(issue);
+        return IssueResponseDto.fromEntity(issue);
+    }
+
+
+    public IssueResponseDto updateIssueStatus(IssueUpdateStatusRequestDto dto, Long userId) {
+        User user = userRepository.findById(userId).orElseThrow();
+        Issue issue = issueRepository.findById(dto.issueId())
+                .orElseThrow(() -> new IssueCustomException(IssueErrorCode.ISSUE_NOT_FOUND));
+
+        String beforeStatus = String.valueOf(issue.getIssueStatus());
 
         try {
             IssueStatus issueStatus = IssueStatus.valueOf(dto.status().toUpperCase());
             issue.updateStatus(issueStatus);
+            IssueHistory issueHistory = IssueHistory.create(user, issue, "상태 업데이트됨", beforeStatus + " -> "+ dto.status());
+            issueHistoryRepository.save(issueHistory);
         } catch (IllegalArgumentException e) {
             throw new IssueCustomException(IssueErrorCode.INVALID_ISSUE_TYPE);
         }
+
 
         issueRepository.save(issue);
         return IssueResponseDto.fromEntity(issue);
@@ -101,6 +119,7 @@ public class IssueService {
         Issue issue = issueRepository.findById(issueId)
                 .orElseThrow(() -> new IllegalArgumentException("Issue not found with id: " + issueId));
 
+        issueHistoryRepository.deleteAllByIssueId(issueId);
         issueRepository.delete(issue);
 
         return IssueResponseDto.fromEntity(issue);
