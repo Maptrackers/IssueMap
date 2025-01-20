@@ -59,10 +59,11 @@ public class SubIssueCommentController {
             @PathVariable Long subIssueId,
             @PathVariable Long commentId,
             @RequestBody IssueCommentCreateDto requestDto,
-            @RequestParam Long userId
+//            @RequestParam Long userId
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         log.info("서브 이슈 댓글 수정 호출");
-        IssueCommentResponseDto responseDto = commentService.updateComment(subIssueId, commentId, requestDto, userId);
+        IssueCommentResponseDto responseDto = commentService.updateComment(subIssueId, commentId, requestDto, userDetails);
         return ResponseEntity.ok(responseDto);
     }
 

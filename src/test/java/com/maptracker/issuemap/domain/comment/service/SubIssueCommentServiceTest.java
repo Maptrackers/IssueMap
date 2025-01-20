@@ -98,4 +98,48 @@ class SubIssueCommentServiceTest {
         verify(subIssueRepository, times(1)).findById(issueId);
         verify(subIssueCommentRepository, never()).save(any(SubIssueComment.class));
     }
+
+
+    @Test
+    @DisplayName("댓글 업데이트 성공: 해당 이슈와 댓글 작성자가 일치할 경우 댓글 내용이 성공적으로 업데이트된다.")
+    void updateCommentSuccess() {
+        // Given
+        Long issueId = 1L;
+        Long commentId = 1L;
+        String updatedContent = "수정된 댓글 내용";
+        IssueCommentCreateDto requestDto = new IssueCommentCreateDto(null, updatedContent);
+
+        // Mock 데이터 설정
+        SubIssueComment comment = mock(SubIssueComment.class);
+        SubIssue issue = mock(SubIssue.class);
+        User commentOwner = mock(User.class);
+        CustomUserDetails userDetails = new CustomUserDetails(commentOwner);
+
+        // Mock 설정
+        given(subIssueCommentRepository.findById(commentId)).willReturn(Optional.of(comment)); // 댓글 조회 성공
+        given(comment.getSubIssue()).willReturn(issue);
+        given(issue.getId()).willReturn(issueId); // 댓글이 해당 이슈에 속함
+        given(comment.getUser()).willReturn(commentOwner); // 댓글 작성자와 인증된 사용자 동일
+
+        // invocation: 메서드 호출 정보를 담고 있는 객체(어떤 인자가 전달되었는지, 호출된 메서드 이름이 무엇인지 등을 조회)
+        doAnswer(invocation -> { // updateContent(updatedContent) 메서드가 호출될 때의 동작을 정의
+            String content = invocation.getArgument(0, String.class);
+            // 호출된 메서드의 첫 번째 인자를 String 타입으로 가져옵니다.(첫 번째 인자는 updatedContent)
+
+            given(comment.getContent()).willReturn(content);
+            //updateContent("수정된 댓글 내용") 호출 후, comment.getContent()를 호출하면 "수정된 댓글 내용"이 반환됩니다.
+            return null;
+        }).when(comment).updateContent(updatedContent); //  메서드 호출 시 위에서 정의한 동작(doAnswer)이 실행
+
+        // When
+        IssueCommentResponseDto response = commentService.updateComment(issueId, commentId, requestDto, userDetails);
+
+        // Then
+        assertAll(
+                () -> assertNotNull(response), // 반환 값이 null이 아님을 확인
+                () -> assertThat(response.getContent()).isEqualTo(updatedContent), // 업데이트된 댓글 내용 확인
+                () -> verify(comment).updateContent(updatedContent),
+                () -> verify(subIssueCommentRepository, never()).save(comment) // save가 필요 없는 구조라 호출되지 않음
+        );
+    }
 }

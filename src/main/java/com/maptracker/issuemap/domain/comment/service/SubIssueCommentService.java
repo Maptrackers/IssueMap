@@ -51,7 +51,7 @@ public class SubIssueCommentService {
     }
 
     @Transactional
-    public IssueCommentResponseDto updateComment(Long issueId, Long commentId, IssueCommentCreateDto requestDto, Long userId) {
+    public IssueCommentResponseDto updateComment(Long issueId, Long commentId, IssueCommentCreateDto requestDto, CustomUserDetails userDetails) {
         // 1. 댓글 조회
         SubIssueComment comment = subIssueCommentRepository.findById(commentId)
                 .orElseThrow(() -> new MyException(MyErrorCode.COMMENT_NOT_FOUND));
@@ -60,7 +60,8 @@ public class SubIssueCommentService {
             throw new MyException(MyErrorCode.ISSUE_MISMATCH);
         }
         // 3. 유저와 댓글 작성자 매칭 확인
-        if (!comment.getUser().getId().equals(userId)) {
+        User authenticatedUser = userDetails.getUser();
+        if (!comment.getUser().getId().equals(authenticatedUser.getId())) {
             throw new MyException(MyErrorCode.UNAUTHORIZED_USER);
         }
 
