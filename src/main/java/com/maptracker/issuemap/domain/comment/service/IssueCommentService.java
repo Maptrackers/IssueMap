@@ -50,7 +50,7 @@ public class IssueCommentService {
     }
 
     @Transactional
-    public IssueCommentResponseDto updateComment(Long issueId, Long commentId, IssueCommentCreateDto requestDto, Long userId) {
+    public IssueCommentResponseDto updateComment(Long issueId, Long commentId, IssueCommentCreateDto requestDto, CustomUserDetails userDetails) {
         // 1. 댓글 조회
         IssueComment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new MyException(MyErrorCode.COMMENT_NOT_FOUND));
@@ -59,7 +59,8 @@ public class IssueCommentService {
             throw new MyException(MyErrorCode.ISSUE_MISMATCH);
         }
         // 3. 유저와 댓글 작성자 매칭 확인
-        if (!comment.getUser().getId().equals(userId)) {
+        Long authenticatedUserId = userDetails.getUserId();
+        if (!comment.getUser().getId().equals(authenticatedUserId)) {
             throw new MyException(MyErrorCode.UNAUTHORIZED_USER);
         }
 

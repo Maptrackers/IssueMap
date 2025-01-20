@@ -97,21 +97,25 @@ class IssueCommentServiceTest {
         // Given
         Long issueId = 1L;
         Long commentId = 1L;
-        Long userId = 2L; // 다른 사용자 ID
+//        Long userId = 2L; // 다른 사용자 ID
         IssueCommentCreateDto requestDto = new IssueCommentCreateDto(null, null, "수정된 댓글 내용");
 
         IssueComment comment = mock(IssueComment.class);
         Issue issue = mock(Issue.class);
         User anotherUser = mock(User.class);
+        User unauthorizedUser = mock(User.class); // 인증된 사용자
+
+        CustomUserDetails userDetails = new CustomUserDetails(unauthorizedUser);
 
         given(commentRepository.findById(commentId)).willReturn(Optional.of(comment));
         given(comment.getIssue()).willReturn(issue);
         given(issue.getId()).willReturn(issueId);
         given(comment.getUser()).willReturn(anotherUser);
         given(anotherUser.getId()).willReturn(1L); // 댓글 작성자는 다른 사용자
+        given(unauthorizedUser.getId()).willReturn(2L); // 인증된 사용자는 ID 2인 사용자
 
         // When & Then
-        MyException exception = assertThrows(MyException.class, () -> commentService.updateComment(issueId, commentId, requestDto, userId));
+        MyException exception = assertThrows(MyException.class, () -> commentService.updateComment(issueId, commentId, requestDto, userDetails));
         assertThat(exception.getErrorCode()).isEqualTo(MyErrorCode.UNAUTHORIZED_USER);
     }
 
