@@ -2,6 +2,7 @@ package com.maptracker.issuemap.common.jwt;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.maptracker.issuemap.common.global.CookieUtil;
 import com.maptracker.issuemap.domain.user.dto.UserResponse.Login;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -69,37 +70,9 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         Long userId = customUserDetails.getUserId();
         String userEmail = customUserDetails.getUsername();
 
-        String accessToken = jwtUtil.createJwt(userId, userEmail, 60 * 60L * 10L);
+        String accessToken = jwtUtil.createJwt(userId, userEmail, 60 * 30L);
         String refreshToken = jwtUtil.createJwt(userId, userEmail, 60 * 60 * 24L * 7L);
-
-        long refreshTokenExpiration = 60L * 60L * 24L * 7L; // 초 단위 7일
-        String redisKey = "refreshToken:" + userId;
-
-        redisTemplate.opsForValue().set(
-                redisKey,
-                refreshToken,
-                refreshTokenExpiration,
-                TimeUnit.SECONDS
-        );
-
-
-        Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
-        accessTokenCookie.setHttpOnly(true);
-        accessTokenCookie.setSecure(true);
-        accessTokenCookie.setPath("/");
-        accessTokenCookie.setMaxAge(60 * 60 * 10);
-
-
-        Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
-        refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setSecure(true);
-        refreshTokenCookie.setPath("/");
-        refreshTokenCookie.setMaxAge(60 * 60 * 24 * 7);
-
-        response.addCookie(accessTokenCookie);
-        response.addCookie(refreshTokenCookie);
-
-
+        CookieUtil.createCookies(response, "refreshToken", refreshToken, 60 * 60 * 24 * 7);
 
         Login login = new Login(userId, userEmail, accessToken);
         ResponseEntity<Login> loginUserApiResponse = ResponseEntity.ok(login);

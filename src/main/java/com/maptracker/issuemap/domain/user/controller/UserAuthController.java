@@ -4,6 +4,7 @@ import com.maptracker.issuemap.domain.user.dto.UserRequest;
 import com.maptracker.issuemap.domain.user.service.UserAuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,8 +45,8 @@ public class UserAuthController {
             }
     )
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletResponse response) {
-        userAuthService.logout(response);
+    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) {
+        userAuthService.logout(request, response);
         return ResponseEntity.ok().build();
 
     }
