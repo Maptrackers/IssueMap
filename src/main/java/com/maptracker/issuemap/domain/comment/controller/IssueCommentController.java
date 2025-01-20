@@ -1,6 +1,7 @@
 package com.maptracker.issuemap.domain.comment.controller;
 
 
+import com.maptracker.issuemap.common.jwt.CustomUserDetails;
 import com.maptracker.issuemap.domain.comment.dto.IssueCommentCreateDto;
 import com.maptracker.issuemap.domain.comment.dto.IssueCommentResponseDto;
 import com.maptracker.issuemap.domain.comment.service.IssueCommentQueryService;
@@ -11,6 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,16 +40,17 @@ public class IssueCommentController {
     @Operation(summary = "댓글 생성", description = "해당 이슈ID 대한 댓글을 생성한다",
             parameters = {
             @Parameter(name = "issueId", description = "이슈 ID"),
-            @Parameter(name = "userId", description = "댓글을 작성하는 유저의 ID")
+//            @Parameter(name = "userId", description = "댓글을 작성하는 유저의 ID")
     })
     @PostMapping("/{issueId}/comments")
     public ResponseEntity<IssueCommentResponseDto> createComment(
             @PathVariable Long issueId,                      // PathVariable로 issueId를 받음
             @RequestBody IssueCommentCreateDto requestDto,
-            @RequestParam("userId") Long userId              // QueryParam으로 userId를 받음
+//            @RequestParam("userId") Long userId,         // QueryParam으로 userId를 받음
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         log.info("댓글 생성 호출");
-        IssueCommentResponseDto responseDto = commentService.createComment(issueId, requestDto, userId);
+        IssueCommentResponseDto responseDto = commentService.createComment(issueId, requestDto, userDetails);
         return ResponseEntity.ok(responseDto);
     }
 
@@ -58,6 +61,8 @@ public class IssueCommentController {
             @PathVariable Long commentId,
             @RequestBody IssueCommentCreateDto requestDto,
             @RequestParam Long userId
+//            @AuthenticationPrincipal CustomUserDetails userDetails
+
     ) {
         log.info("댓글 수정 호출");
         IssueCommentResponseDto responseDto = commentService.updateComment(issueId, commentId, requestDto, userId);
@@ -70,6 +75,7 @@ public class IssueCommentController {
             @PathVariable Long issueId,
             @PathVariable Long commentId,
             @RequestParam Long userId
+//            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         log.info("댓글 삭제 호출");
         commentService.deleteComment(issueId, commentId, userId);
@@ -84,6 +90,7 @@ public class IssueCommentController {
             @PathVariable Long parentCommentId,
             @RequestBody IssueCommentCreateDto requestDto,
             @RequestParam Long userId
+//            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {// userId는 요청의 인증 정보에서 가져온다고 가정
         log.info("대댓글 생성 호출");
         IssueCommentResponseDto response = commentService.createReply(issueId, parentCommentId, requestDto, userId);
