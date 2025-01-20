@@ -1,4 +1,5 @@
 package com.maptracker.issuemap.domain.comment.service;
+import com.maptracker.issuemap.common.jwt.CustomUserDetails;
 import com.maptracker.issuemap.domain.comment.dto.IssueCommentCreateDto;
 import com.maptracker.issuemap.domain.comment.dto.IssueCommentResponseDto;
 import com.maptracker.issuemap.domain.comment.entity.IssueComment;
@@ -41,15 +42,15 @@ class IssueCommentServiceTest {
     void createComment() {
         // Given
         Long issueId = 1L;
-        Long userId = 1L;
+//        Long userId = 1L;
         IssueCommentCreateDto requestDto = new IssueCommentCreateDto(1L, null, "테스트 댓글 내용");
 
         Issue issue = mock(Issue.class);
         User user = mock(User.class);
         IssueComment savedComment = mock(IssueComment.class);
+        CustomUserDetails userDetails = new CustomUserDetails(user);
 
         given(issueRepository.findById(issueId)).willReturn(Optional.of(issue));
-        given(userRepository.findById(userId)).willReturn(Optional.of(user));
         given(commentRepository.save(any(IssueComment.class))).willReturn(savedComment);
 
         given(savedComment.getId()).willReturn(1L);
@@ -58,7 +59,7 @@ class IssueCommentServiceTest {
         given(savedComment.getUser()).willReturn(user);
 
         // When
-        IssueCommentResponseDto responseDto = commentService.createComment(issueId, requestDto, userId);
+        IssueCommentResponseDto responseDto = commentService.createComment(issueId, requestDto, userDetails);
 
         // Then
         assertAll(
@@ -73,13 +74,16 @@ class IssueCommentServiceTest {
     void createCommentWhenIssueNotFound() {
         // Given
         Long issueId = 1L;
-        Long userId = 1L;
+//        Long userId = 1L;
         IssueCommentCreateDto requestDto = new IssueCommentCreateDto(1L, null, "테스트 댓글 내용");
+
+        User user = mock(User.class);
+        CustomUserDetails userDetails = new CustomUserDetails(user);
 
         given(issueRepository.findById(1L)).willReturn(Optional.empty());
 
         // When & Then
-        MyException exception = assertThrows(MyException.class, () -> commentService.createComment(issueId, requestDto, userId));
+        MyException exception = assertThrows(MyException.class, () -> commentService.createComment(issueId, requestDto, userDetails));
 
         assertAll(
                 () -> assertThat(exception.getErrorCode()).isEqualTo(MyErrorCode.ISSUE_NOT_FOUND),
