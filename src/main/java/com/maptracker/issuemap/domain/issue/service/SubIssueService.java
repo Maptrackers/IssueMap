@@ -2,7 +2,7 @@ package com.maptracker.issuemap.domain.issue.service;
 
 import com.maptracker.issuemap.domain.issue.dto.subissue.SubIssueCreateRequestDto;
 import com.maptracker.issuemap.domain.issue.dto.subissue.SubIssueResponseDto;
-import com.maptracker.issuemap.domain.issue.dto.subissue.SubIssueStatusUpdateRequestDto;
+import com.maptracker.issuemap.domain.issue.dto.subissue.SubIssueUpdateStatusRequestDto;
 import com.maptracker.issuemap.domain.issue.dto.subissue.SubIssueUpdateRequestDto;
 import com.maptracker.issuemap.domain.issue.entity.Issue;
 import com.maptracker.issuemap.domain.issue.entity.IssueStatus;
@@ -69,7 +69,7 @@ public class SubIssueService {
     }
 
 
-    public SubIssueResponseDto updateSubIssueStatus(SubIssueStatusUpdateRequestDto dto) {
+    public SubIssueResponseDto updateSubIssueStatus(SubIssueUpdateStatusRequestDto dto) {
         SubIssue subIssue = subIssueRepository.findById(dto.subIssueId())
                 .orElseThrow(() -> new SubIssueCustomException(SubIssueErrorCode.SUBISSUE_NOT_FOUND));
 

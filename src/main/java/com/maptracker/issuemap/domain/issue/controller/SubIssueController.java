@@ -1,9 +1,6 @@
 package com.maptracker.issuemap.domain.issue.controller;
 
-import com.maptracker.issuemap.domain.issue.dto.subissue.SubIssueResponseDto;
-import com.maptracker.issuemap.domain.issue.dto.subissue.SubIssueCreateRequestDto;
-import com.maptracker.issuemap.domain.issue.dto.subissue.SubIssueStatusUpdateRequestDto;
-import com.maptracker.issuemap.domain.issue.dto.subissue.SubIssueUpdateRequestDto;
+import com.maptracker.issuemap.domain.issue.dto.subissue.*;
 import com.maptracker.issuemap.domain.issue.service.SubIssueService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -79,7 +76,7 @@ public class SubIssueController {
             }
     )
     @PutMapping
-    public ResponseEntity<SubIssueResponseDto> updateSubIssue(
+    public ResponseEntity<SubIssueResponseDto> updateSubIssueTitle(
             @RequestBody SubIssueUpdateRequestDto subIssueUpdateRequestDto
     ) {
         SubIssueResponseDto response = subIssueService.updateSubIssue(subIssueUpdateRequestDto);
@@ -95,11 +92,12 @@ public class SubIssueController {
                     @ApiResponse(responseCode = "400", description = "잘못된 상태 값")
             }
     )
-    @PatchMapping
-    public ResponseEntity<SubIssueResponseDto> patchSubIssue(
-            @RequestBody SubIssueStatusUpdateRequestDto subIssueStatusUpdateRequestDto
+    @PatchMapping("/status/{userId}")
+    public ResponseEntity<SubIssueResponseDto> patchSubIssueStatus(
+            @RequestBody SubIssueUpdateStatusRequestDto subIssueUpdateStatusRequestDto,
+            @PathVariable Long userId
     ) {
-        SubIssueResponseDto response = subIssueService.updateSubIssueStatus(subIssueStatusUpdateRequestDto);
+        SubIssueResponseDto response = subIssueService.updateSubIssueStatus(subIssueUpdateStatusRequestDto);
         return ResponseEntity.ok(response);
     }
 

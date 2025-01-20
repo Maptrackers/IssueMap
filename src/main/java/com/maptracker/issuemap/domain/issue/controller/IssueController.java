@@ -58,14 +58,31 @@ public class IssueController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "이슈 업데이트 API", description = "특정 이슈 정보 업데이트",
+    @Operation(summary = "이슈 제목 업데이트 API", description = "특정 이슈 제목 업데이트",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "이슈 업데이트 성공"),
+                    @ApiResponse(responseCode = "200", description = "이슈 제목 업데이트 성공"),
                     @ApiResponse(responseCode = "404", description = "이슈를 찾을 수 없음")
             })
-    @PutMapping
-    public ResponseEntity<IssueResponseDto> updateIssue(@RequestBody IssueUpdateRequestDto requestDto) {
-        IssueResponseDto response = issueService.updateIssue(requestDto);
+    @PatchMapping("/title/{userId}")
+    public ResponseEntity<IssueResponseDto> updateIssueTitle(
+            @RequestBody IssueUpdateTitleRequestDto requestDto,
+            @PathVariable Long userId
+    ) {
+        IssueResponseDto response = issueService.updateIssueTitle(requestDto, userId);
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "이슈 내용 업데이트 API", description = "특정 이슈 내용 업데이트",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "이슈 내용 업데이트 성공"),
+                    @ApiResponse(responseCode = "404", description = "이슈를 찾을 수 없음")
+            })
+    @PatchMapping("/content/{userId}")
+    public ResponseEntity<IssueResponseDto> updateIssueContent(
+            @RequestBody IssueUpdateContentRequestDto requestDto,
+            @PathVariable Long userId
+    ) {
+        IssueResponseDto response = issueService.updateIssueContent(requestDto, userId);
         return ResponseEntity.ok(response);
     }
 
@@ -74,9 +91,12 @@ public class IssueController {
                     @ApiResponse(responseCode = "200", description = "이슈 상태 업데이트 성공"),
                     @ApiResponse(responseCode = "404", description = "이슈를 찾을 수 없음")
             })
-    @PatchMapping
-    public ResponseEntity<IssueResponseDto> updateIssueStatus(@RequestBody IssueStatusUpdateRequestDto requestDto) {
-        IssueResponseDto response = issueService.updateIssueStatus(requestDto);
+    @PatchMapping("/status/{userId}")
+    public ResponseEntity<IssueResponseDto> updateIssueStatus(
+            @RequestBody IssueUpdateStatusRequestDto requestDto,
+            @PathVariable Long userId
+    ) {
+        IssueResponseDto response = issueService.updateIssueStatus(requestDto, userId);
         return ResponseEntity.ok(response);
     }
 

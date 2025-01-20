@@ -1,6 +1,6 @@
 package com.maptracker.issuemap.domain.issue.dto.subissue;
 
-public record SubIssueStatusUpdateRequestDto(
+public record SubIssueUpdateStatusRequestDto(
         Long subIssueId,
         String status
 ) {

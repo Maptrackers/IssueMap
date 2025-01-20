@@ -71,10 +71,6 @@ public class Issue extends BaseTimeEntity {
         this.content = content;
     }
 
-    public void updateIssueType(IssueType issueType) {
-        this.issueType = issueType;
-    }
-
     public void updateStatus(IssueStatus issueStatus) {
         this.issueStatus = issueStatus;
     }
