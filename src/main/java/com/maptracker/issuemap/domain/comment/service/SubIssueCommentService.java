@@ -1,5 +1,6 @@
 package com.maptracker.issuemap.domain.comment.service;
 
+import com.maptracker.issuemap.common.jwt.CustomUserDetails;
 import com.maptracker.issuemap.domain.comment.dto.IssueCommentCreateDto;
 import com.maptracker.issuemap.domain.comment.dto.IssueCommentResponseDto;
 import com.maptracker.issuemap.domain.comment.entity.SubIssueComment;
@@ -23,11 +24,14 @@ public class SubIssueCommentService {
 
 
     @Transactional
-    public IssueCommentResponseDto createComment(Long issueId, IssueCommentCreateDto requestDto, Long userId) {
+    public IssueCommentResponseDto createComment(Long issueId, IssueCommentCreateDto requestDto, CustomUserDetails userDetails) {
         // 1. 이슈 조회
         SubIssue issue = subIssueRepository.findById(issueId).orElseThrow(() -> new MyException(MyErrorCode.ISSUE_NOT_FOUND));
+
         // 2. 유저 조회
-        User user = userRepository.findById(userId).orElseThrow(() -> new MyException(MyErrorCode.USER_NOT_FOUND));
+//        User user = userRepository.findById(userId).orElseThrow(() -> new MyException(MyErrorCode.USER_NOT_FOUND));
+        User user = userDetails.getUser();
+
         // 3. 부모 댓글 조회 (null이면 처음 상위 댓글)
         SubIssueComment parentComment = null;
         if (requestDto.getParentCommentId() != null) {

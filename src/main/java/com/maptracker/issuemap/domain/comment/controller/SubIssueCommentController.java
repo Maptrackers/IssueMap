@@ -1,5 +1,6 @@
 package com.maptracker.issuemap.domain.comment.controller;
 
+import com.maptracker.issuemap.common.jwt.CustomUserDetails;
 import com.maptracker.issuemap.domain.comment.dto.IssueCommentCreateDto;
 import com.maptracker.issuemap.domain.comment.dto.IssueCommentResponseDto;
 import com.maptracker.issuemap.domain.comment.service.SubIssueCommentService;
@@ -10,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -43,10 +45,11 @@ public class SubIssueCommentController {
     public ResponseEntity<IssueCommentResponseDto> createComment(
             @PathVariable Long subIssueId,
             @RequestBody IssueCommentCreateDto requestDto,
-            @RequestParam("userId") Long userId
+//            @RequestParam("userId") Long userId
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         log.info("서브 이슈 댓글 생성 호출");
-        IssueCommentResponseDto responseDto = commentService.createComment(subIssueId, requestDto, userId);
+        IssueCommentResponseDto responseDto = commentService.createComment(subIssueId, requestDto, userDetails);
         return ResponseEntity.ok(responseDto);
     }
 
