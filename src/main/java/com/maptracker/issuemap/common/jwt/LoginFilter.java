@@ -14,8 +14,10 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +33,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
+    private final RedisTemplate<String, String> redisTemplate;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
@@ -68,6 +71,17 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         String accessToken = jwtUtil.createJwt(userId, userEmail, 60 * 60L * 10L);
         String refreshToken = jwtUtil.createJwt(userId, userEmail, 60 * 60 * 24L * 7L);
+
+        long refreshTokenExpiration = 60L * 60L * 24L * 7L; // 초 단위 7일
+        String redisKey = "refreshToken:" + userId;
+
+        redisTemplate.opsForValue().set(
+                redisKey,
+                refreshToken,
+                refreshTokenExpiration,
+                TimeUnit.SECONDS
+        );
+
 
         Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
         accessTokenCookie.setHttpOnly(true);
