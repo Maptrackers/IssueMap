@@ -66,6 +66,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
                         .requestMatchers("/api/issues/**").permitAll()
                         .requestMatchers("/api/subissues/**").permitAll()
+                        .requestMatchers("/api/issuehistories/**").permitAll()
                         .requestMatchers("/api/users/**").permitAll()
                         .anyRequest().authenticated()
                 );
