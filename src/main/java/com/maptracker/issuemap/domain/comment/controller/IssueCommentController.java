@@ -74,11 +74,11 @@ public class IssueCommentController {
     public ResponseEntity<Void> deleteComment(
             @PathVariable Long issueId,
             @PathVariable Long commentId,
-            @RequestParam Long userId
-//            @AuthenticationPrincipal CustomUserDetails userDetails
+//            @RequestParam Long userId
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         log.info("댓글 삭제 호출");
-        commentService.deleteComment(issueId, commentId, userId);
+        commentService.deleteComment(issueId, commentId, userDetails);
         return ResponseEntity.noContent().build();
     }
 
@@ -89,11 +89,11 @@ public class IssueCommentController {
             @PathVariable Long issueId,
             @PathVariable Long parentCommentId,
             @RequestBody IssueCommentCreateDto requestDto,
-            @RequestParam Long userId
-//            @AuthenticationPrincipal CustomUserDetails userDetails
+//            @RequestParam Long userId
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {// userId는 요청의 인증 정보에서 가져온다고 가정
         log.info("대댓글 생성 호출");
-        IssueCommentResponseDto response = commentService.createReply(issueId, parentCommentId, requestDto, userId);
+        IssueCommentResponseDto response = commentService.createReply(issueId, parentCommentId, requestDto, userDetails);
         return ResponseEntity.ok(response);
     }
 }

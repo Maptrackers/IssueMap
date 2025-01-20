@@ -74,7 +74,7 @@ public class IssueCommentService {
     }
 
     @Transactional
-    public void deleteComment(Long issueId, Long commentId, Long userId) {
+    public void deleteComment(Long issueId, Long commentId, CustomUserDetails userDetails) {
         // 1. 댓글 조회
         IssueComment comment = commentRepository.findById(commentId).orElseThrow(() -> new MyException(MyErrorCode.COMMENT_NOT_FOUND));
 
@@ -84,7 +84,8 @@ public class IssueCommentService {
         }
 
         // 3. 유저와 댓글 작성자 매칭 확인
-        if (!comment.getUser().getId().equals(userId)) {
+        Long authenticatedUserId = userDetails.getUserId();
+        if (!comment.getUser().getId().equals(authenticatedUserId)) {
             throw new MyException(MyErrorCode.UNAUTHORIZED_USER);
         }
 
@@ -95,14 +96,15 @@ public class IssueCommentService {
 
     // 대댓글 생성
     @Transactional
-    public IssueCommentResponseDto createReply(Long issueId, Long parentCommentId, IssueCommentCreateDto requestDto, Long userId) {
+    public IssueCommentResponseDto createReply(Long issueId, Long parentCommentId, IssueCommentCreateDto requestDto, CustomUserDetails userDetails) {
         // 1. 이슈 조회 및 존재 여부 확인
         Issue issue = issueRepository.findById(issueId)
                 .orElseThrow(() -> new MyException(MyErrorCode.ISSUE_NOT_FOUND));
 
         // 2. 유저 조회 및 존재 여부 확인
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new MyException(MyErrorCode.USER_NOT_FOUND));
+        User user = userDetails.getUser();
+//        User user = userRepository.findById(userId)
+//                .orElseThrow(() -> new MyException(MyErrorCode.USER_NOT_FOUND));
 
         // 3. 부모 댓글 조회 및 존재 여부 확인
         IssueComment parentComment = commentRepository.findById(parentCommentId)
@@ -112,6 +114,7 @@ public class IssueCommentService {
         if (!parentComment.getIssue().getId().equals(issueId)) {
             throw new MyException(MyErrorCode.ISSUE_MISMATCH);
         }
+
         IssueComment reply = IssueComment.builder()
                 .content(requestDto.getContent())
                 .user(user)
