@@ -40,4 +40,27 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserTeam> teams = new ArrayList<>();
 
+
+    public static User create(String email, String username, String nickname, String password) {
+        return User.builder()
+                .id(null)
+                .username(username)
+                .email(email)
+                .nickname(nickname)
+                .password(password)
+                .role(Role.USER)
+                .teams(new ArrayList<>())
+                .build();
+    }
+
+    public void editMemberInformation(String nickname, String password) {
+        if (nickname != null && !nickname.isEmpty()) {
+            this.nickname = nickname;
+        }
+
+        if (password != null && !password.isEmpty()) {
+            this.password = password;
+        }
+    }
+
 }

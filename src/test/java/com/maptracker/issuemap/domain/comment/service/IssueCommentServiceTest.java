@@ -1,10 +1,10 @@
 package com.maptracker.issuemap.domain.comment.service;
-import com.maptracker.issuemap.domain.comment.dto.IssueCommentRequestDto;
+import com.maptracker.issuemap.domain.comment.dto.IssueCommentCreateDto;
 import com.maptracker.issuemap.domain.comment.dto.IssueCommentResponseDto;
 import com.maptracker.issuemap.domain.comment.entity.IssueComment;
 import com.maptracker.issuemap.domain.comment.exception.MyErrorCode;
 import com.maptracker.issuemap.domain.comment.exception.MyException;
-import com.maptracker.issuemap.domain.comment.repository.CommentRepository;
+import com.maptracker.issuemap.domain.comment.repository.IssueCommentRepository;
 import com.maptracker.issuemap.domain.issue.entity.Issue;
 import com.maptracker.issuemap.domain.issue.repository.IssueRepository;
 import com.maptracker.issuemap.domain.user.entity.User;
@@ -28,7 +28,7 @@ class IssueCommentServiceTest {
     private IssueCommentService commentService; // 테스트 대상 클래스
 
     @Mock
-    private CommentRepository commentRepository;
+    private IssueCommentRepository commentRepository;
 
     @Mock
     private IssueRepository issueRepository;
@@ -42,7 +42,7 @@ class IssueCommentServiceTest {
         // Given
         Long issueId = 1L;
         Long userId = 1L;
-        IssueCommentRequestDto requestDto = new IssueCommentRequestDto(1L, null, "테스트 댓글 내용");
+        IssueCommentCreateDto requestDto = new IssueCommentCreateDto(1L, null, "테스트 댓글 내용");
 
         Issue issue = mock(Issue.class);
         User user = mock(User.class);
@@ -74,7 +74,7 @@ class IssueCommentServiceTest {
         // Given
         Long issueId = 1L;
         Long userId = 1L;
-        IssueCommentRequestDto requestDto = new IssueCommentRequestDto(1L, null, "테스트 댓글 내용");
+        IssueCommentCreateDto requestDto = new IssueCommentCreateDto(1L, null, "테스트 댓글 내용");
 
         given(issueRepository.findById(1L)).willReturn(Optional.empty());
 
@@ -85,5 +85,78 @@ class IssueCommentServiceTest {
                 () -> assertThat(exception.getErrorCode()).isEqualTo(MyErrorCode.ISSUE_NOT_FOUND),
                 () -> verify(commentRepository, never()).save(any(IssueComment.class))
         );
+    }
+
+    @Test
+    @DisplayName("다른 사용자가 댓글을 수정하려고 하면 예외를 던진다")
+    void updateCommentWhenUnauthorizedUser() {
+        // Given
+        Long issueId = 1L;
+        Long commentId = 1L;
+        Long userId = 2L; // 다른 사용자 ID
+        IssueCommentCreateDto requestDto = new IssueCommentCreateDto(null, null, "수정된 댓글 내용");
+
+        IssueComment comment = mock(IssueComment.class);
+        Issue issue = mock(Issue.class);
+        User anotherUser = mock(User.class);
+
+        given(commentRepository.findById(commentId)).willReturn(Optional.of(comment));
+        given(comment.getIssue()).willReturn(issue);
+        given(issue.getId()).willReturn(issueId);
+        given(comment.getUser()).willReturn(anotherUser);
+        given(anotherUser.getId()).willReturn(1L); // 댓글 작성자는 다른 사용자
+
+        // When & Then
+        MyException exception = assertThrows(MyException.class, () -> commentService.updateComment(issueId, commentId, requestDto, userId));
+        assertThat(exception.getErrorCode()).isEqualTo(MyErrorCode.UNAUTHORIZED_USER);
+    }
+
+    @Test
+    @DisplayName("댓글을 삭제하면 삭제된 댓글이 표시되지 않는다")
+    void deleteComment() {
+        // Given
+        Long issueId = 1L;
+        Long commentId = 1L;
+        Long userId = 1L;
+
+        IssueComment comment = mock(IssueComment.class);
+        Issue issue = mock(Issue.class);
+        User user = mock(User.class);
+
+        given(commentRepository.findById(commentId)).willReturn(Optional.of(comment));
+        given(comment.getIssue()).willReturn(issue);
+        given(issue.getId()).willReturn(issueId);
+        given(comment.getUser()).willReturn(user);
+        given(user.getId()).willReturn(userId);
+
+        // When
+        commentService.deleteComment(issueId, commentId, userId);
+
+        // Then
+        verify(comment).markDeleted(); // Soft delete 호출 확인
+        verify(commentRepository, times(1)).save(comment);
+    }
+
+    @Test
+    @DisplayName("다른 사용자가 댓글을 삭제하려고 하면 예외를 던진다")
+    void deleteCommentWhenUnauthorizedUser() {
+        // Given
+        Long issueId = 1L;
+        Long commentId = 1L;
+        Long userId = 2L; // 다른 사용자 ID
+
+        IssueComment comment = mock(IssueComment.class);
+        Issue issue = mock(Issue.class);
+        User anotherUser = mock(User.class);
+
+        given(commentRepository.findById(commentId)).willReturn(Optional.of(comment));
+        given(comment.getIssue()).willReturn(issue);
+        given(issue.getId()).willReturn(issueId);
+        given(comment.getUser()).willReturn(anotherUser);
+        given(anotherUser.getId()).willReturn(1L); // 댓글 작성자는 다른 사용자
+
+        // When & Then
+        MyException exception = assertThrows(MyException.class, () -> commentService.deleteComment(issueId, commentId, userId));
+        assertThat(exception.getErrorCode()).isEqualTo(MyErrorCode.UNAUTHORIZED_USER);
     }
 }
