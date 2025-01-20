@@ -30,9 +30,10 @@ public class IssueCommentController {
     @Operation(summary = "이슈 전체 댓글 조회", description = "해당 이슈ID 대한 전체 댓글을 조회한다")
     @GetMapping("/{issueId}/comments")
     public ResponseEntity<List<IssueCommentResponseDto>> getCommentsByIssue(
-            @PathVariable Long issueId
+            @PathVariable Long issueId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        log.info("댓글 조회 호출");
+        log.info("댓글 조회 호출 by userId: {}", userDetails.getUserId());
         List<IssueCommentResponseDto> comments = commentQueryService.getCommentsByIssue(issueId);
         return ResponseEntity.ok(comments);
     }
