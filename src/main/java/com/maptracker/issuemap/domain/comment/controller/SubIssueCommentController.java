@@ -72,10 +72,11 @@ public class SubIssueCommentController {
     public ResponseEntity<Void> deleteComment(
             @PathVariable Long subIssueId,
             @PathVariable Long commentId,
-            @RequestParam Long userId
+//            @RequestParam Long userId
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         log.info("서브 이슈 댓글 삭제 호출");
-        commentService.deleteComment(subIssueId, commentId, userId);
+        commentService.deleteComment(subIssueId, commentId, userDetails);
         return ResponseEntity.noContent().build();
     }
 

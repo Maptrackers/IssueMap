@@ -75,7 +75,7 @@ public class SubIssueCommentService {
     }
 
     @Transactional
-    public void deleteComment(Long issueId, Long commentId, Long userId) {
+    public void deleteComment(Long issueId, Long commentId, CustomUserDetails userDetails) {
         // 1. 댓글 조회
         SubIssueComment comment = subIssueCommentRepository.findById(commentId).orElseThrow(() -> new MyException(MyErrorCode.COMMENT_NOT_FOUND));
 
@@ -85,7 +85,8 @@ public class SubIssueCommentService {
         }
 
         // 3. 유저와 댓글 작성자 매칭 확인
-        if (!comment.getUser().getId().equals(userId)) {
+        User authenticatedUser = userDetails.getUser();
+        if (!comment.getUser().getId().equals(authenticatedUser.getId())) {
             throw new MyException(MyErrorCode.UNAUTHORIZED_USER);
         }
 

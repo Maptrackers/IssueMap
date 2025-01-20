@@ -142,4 +142,81 @@ class SubIssueCommentServiceTest {
                 () -> verify(subIssueCommentRepository, never()).save(comment) // save가 필요 없는 구조라 호출되지 않음
         );
     }
+
+    @Test
+    @DisplayName("댓글 삭제 성공: 이슈와 작성자가 일치할 경우 Soft Delete 처리된다.")
+    void deleteCommentSuccess() {
+        // Given
+        Long issueId = 1L;
+        Long commentId = 1L;
+
+        SubIssueComment comment = mock(SubIssueComment.class);
+        SubIssue issue = mock(SubIssue.class);
+        User commentOwner = mock(User.class);
+        CustomUserDetails userDetails = new CustomUserDetails(commentOwner);
+
+        // Mock 설정
+        given(subIssueCommentRepository.findById(commentId)).willReturn(Optional.of(comment)); // 댓글 조회 성공
+        given(comment.getSubIssue()).willReturn(issue);
+        given(issue.getId()).willReturn(issueId); // 댓글이 해당 이슈에 속함
+        given(comment.getUser()).willReturn(commentOwner); // 댓글 작성자와 인증된 사용자 동일
+
+        // When
+        commentService.deleteComment(issueId, commentId, userDetails);
+
+        // Then
+        verify(comment).markDeleted(); // Soft delete 호출 확인
+        verify(subIssueCommentRepository, times(1)).save(comment); // 저장 호출 확인
+    }
+
+    @Test
+    @DisplayName("댓글 삭제 실패: 해당 댓글이 존재하지 않을 경우 예외가 발생한다.")
+    void deleteCommentWhenCommentNotFound() {
+        // Given
+        Long issueId = 1L;
+        Long commentId = 1L;
+        CustomUserDetails userDetails = new CustomUserDetails(mock(User.class));
+
+        // Mock 설정
+        given(subIssueCommentRepository.findById(commentId)).willReturn(Optional.empty()); // 댓글 조회 실패
+
+        // When & Then
+        MyException exception = assertThrows(MyException.class, () ->
+                commentService.deleteComment(issueId, commentId, userDetails)
+        );
+
+        assertThat(exception.getErrorCode()).isEqualTo(MyErrorCode.COMMENT_NOT_FOUND);
+        verify(subIssueCommentRepository, never()).save(any(SubIssueComment.class)); // 저장 호출되지 않음
+    }
+
+    @Test
+    @DisplayName("댓글 삭제 실패: 댓글 작성자가 아닌 사용자가 삭제하려고 할 경우 예외가 발생한다.")
+    void deleteCommentWhenUnauthorizedUser() {
+        // Given
+        Long issueId = 1L;
+        Long commentId = 1L;
+
+        SubIssueComment comment = mock(SubIssueComment.class);
+        SubIssue issue = mock(SubIssue.class);
+        User commentOwner = mock(User.class); // 댓글 작성자
+        User unauthorizedUser = mock(User.class); // 인증된 사용자 (댓글 작성자가 아님)
+        CustomUserDetails userDetails = new CustomUserDetails(unauthorizedUser);
+
+        // Mock 설정
+        given(subIssueCommentRepository.findById(commentId)).willReturn(Optional.of(comment)); // 댓글 조회 성공
+        given(comment.getSubIssue()).willReturn(issue);
+        given(issue.getId()).willReturn(issueId);
+        given(comment.getUser()).willReturn(commentOwner); // 댓글 작성자 설정
+        given(commentOwner.getId()).willReturn(1L); // 댓글 작성자의 ID
+        given(unauthorizedUser.getId()).willReturn(2L); // 인증된 사용자의 ID (이론상 이 유저가 삭제가 가능하면 안됨 )
+
+        // When & Then
+        MyException exception = assertThrows(MyException.class, () ->
+                commentService.deleteComment(issueId, commentId, userDetails)
+        );
+
+        assertThat(exception.getErrorCode()).isEqualTo(MyErrorCode.UNAUTHORIZED_USER);
+        verify(comment, never()).markDeleted(); // 삭제 호출되지 않음
+        verify(subIssueCommentRepository, never()).save(any(SubIssueComment.class)); // 저장 호출되지 않음
+    }
 }
