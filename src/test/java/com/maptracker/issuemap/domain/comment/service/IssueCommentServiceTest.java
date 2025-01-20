@@ -38,12 +38,12 @@ class IssueCommentServiceTest {
     private UserRepository userRepository;
 
     @Test
-    @DisplayName("댓글을 생성하면 생성된 댓글의 정보를 반환한다")
+    @DisplayName("이슈에 댓글을 생성하면 생성된 댓글의 정보를 반환한다")
     void createComment() {
         // Given
         Long issueId = 1L;
 //        Long userId = 1L;
-        IssueCommentCreateDto requestDto = new IssueCommentCreateDto(1L, null, "테스트 댓글 내용");
+        IssueCommentCreateDto requestDto = new IssueCommentCreateDto( null, "테스트 댓글 내용");
 
         Issue issue = mock(Issue.class);
         User user = mock(User.class);
@@ -75,7 +75,7 @@ class IssueCommentServiceTest {
         // Given
         Long issueId = 1L;
 //        Long userId = 1L;
-        IssueCommentCreateDto requestDto = new IssueCommentCreateDto(1L, null, "테스트 댓글 내용");
+        IssueCommentCreateDto requestDto = new IssueCommentCreateDto( null, "테스트 댓글 내용");
 
         User user = mock(User.class);
         CustomUserDetails userDetails = new CustomUserDetails(user);
@@ -98,7 +98,7 @@ class IssueCommentServiceTest {
         Long issueId = 1L;
         Long commentId = 1L;
 //        Long userId = 2L; // 다른 사용자 ID
-        IssueCommentCreateDto requestDto = new IssueCommentCreateDto(null, null, "수정된 댓글 내용");
+        IssueCommentCreateDto requestDto = new IssueCommentCreateDto(null, "수정된 댓글 내용");
 
         IssueComment comment = mock(IssueComment.class);
         Issue issue = mock(Issue.class);
@@ -182,7 +182,7 @@ class IssueCommentServiceTest {
         // Given
         Long issueId = 1L;
         Long parentCommentId = 1L;
-        IssueCommentCreateDto requestDto = new IssueCommentCreateDto(null, null, "대댓글 내용");
+        IssueCommentCreateDto requestDto = new IssueCommentCreateDto( null, "대댓글 내용");
 
         // Mock 데이터 설정
         Issue issue = mock(Issue.class);
@@ -221,7 +221,7 @@ class IssueCommentServiceTest {
         // Given
         Long issueId = 1L;
         Long parentCommentId = 1L;
-        IssueCommentCreateDto requestDto = new IssueCommentCreateDto(null, null, "대댓글 내용");
+        IssueCommentCreateDto requestDto = new IssueCommentCreateDto( null, "대댓글 내용");
 
         CustomUserDetails userDetails = new CustomUserDetails(mock(User.class));
 
@@ -242,7 +242,7 @@ class IssueCommentServiceTest {
         // Given
         Long issueId = 1L;
         Long parentCommentId = 1L;
-        IssueCommentCreateDto requestDto = new IssueCommentCreateDto(null, null, "대댓글 내용");
+        IssueCommentCreateDto requestDto = new IssueCommentCreateDto( null, "대댓글 내용");
 
         CustomUserDetails userDetails = new CustomUserDetails(mock(User.class));
         Issue issue = mock(Issue.class);
@@ -265,7 +265,7 @@ class IssueCommentServiceTest {
         // Given
         Long issueId = 1L;
         Long parentCommentId = 1L;
-        IssueCommentCreateDto requestDto = new IssueCommentCreateDto(null, null, "대댓글 내용");
+        IssueCommentCreateDto requestDto = new IssueCommentCreateDto( null, "대댓글 내용");
 
         CustomUserDetails userDetails = new CustomUserDetails(mock(User.class));
         Issue issue = mock(Issue.class);
