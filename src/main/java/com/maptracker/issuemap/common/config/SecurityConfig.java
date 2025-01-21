@@ -1,11 +1,13 @@
 package com.maptracker.issuemap.common.config;
 
+import com.maptracker.issuemap.common.jwt.GlobalExceptionHandlingFilter;
 import com.maptracker.issuemap.common.jwt.JwtFilter;
 import com.maptracker.issuemap.common.jwt.JwtUtil;
 import com.maptracker.issuemap.common.jwt.LoginFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -25,6 +27,7 @@ public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JwtUtil jwtUtil;
+    private final RedisTemplate<String, String> redisTemplate;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -38,6 +41,9 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
+
+
 
         http
                 .csrf((auth) -> auth.disable());
@@ -75,12 +81,12 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         http
-                .addFilterBefore(new JwtFilter(jwtUtil), LoginFilter.class);
+                .addFilterBefore(new JwtFilter(jwtUtil,redisTemplate), LoginFilter.class);
 
-        LoginFilter loginFilter = new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil);
+        LoginFilter loginFilter = new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, redisTemplate);
         loginFilter.setFilterProcessesUrl("/api/users/login");
         http.addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
-
+        http.addFilterBefore(new GlobalExceptionHandlingFilter(), JwtFilter.class);
 
         return http.build();
     }
