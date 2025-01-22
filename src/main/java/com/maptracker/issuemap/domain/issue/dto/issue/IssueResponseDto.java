@@ -24,7 +24,7 @@ public record IssueResponseDto(
                 issue.getContent(),
                 issue.getIssueType().name(),
                 issue.getIssueStatus().name(),
-                issue.getProject().getId(),
+                issue.getProject().getProjectId(),
                 issue.getProject().getProjectName(),
                 issue.getUser().getId(),
                 issue.getUser().getUsername(),

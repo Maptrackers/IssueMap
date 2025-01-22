@@ -73,7 +73,8 @@ public class JwtFilter extends OncePerRequestFilter {
                 || uri.contains("swagger-ui")
                 || uri.contains("swagger-resources")
                 || uri.contains("v3/api-docs")
-                || uri.contains("webjars");
+                || uri.contains("webjars")
+                || uri.contains("users") && request.getMethod().equals("POST");
     }
 
     private void validateTokenHeader(HttpServletRequest request, String header) {
