@@ -74,6 +74,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/subissues/**").permitAll()
                         .requestMatchers("/api/issuehistories/**").permitAll()
                         .requestMatchers("/api/users/**").permitAll()
+                        .requestMatchers("/api/inquiries/**").permitAll()
                         .anyRequest().authenticated()
                 );
         http
