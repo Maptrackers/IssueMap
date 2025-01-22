@@ -7,6 +7,8 @@ import com.maptracker.issuemap.domain.comment.exception.MyErrorCode;
 import com.maptracker.issuemap.domain.comment.exception.MyException;
 import com.maptracker.issuemap.domain.comment.repository.IssueCommentRepository;
 import com.maptracker.issuemap.domain.issue.entity.Issue;
+import com.maptracker.issuemap.domain.issue.entity.IssueStatus;
+import com.maptracker.issuemap.domain.issue.entity.IssueType;
 import com.maptracker.issuemap.domain.issue.repository.IssueRepository;
 import com.maptracker.issuemap.domain.user.entity.User;
 import com.maptracker.issuemap.domain.user.repository.UserRepository;
@@ -22,6 +24,7 @@ import java.util.Optional;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
 class IssueCommentServiceTest {
@@ -182,35 +185,62 @@ class IssueCommentServiceTest {
         // Given
         Long issueId = 1L;
         Long parentCommentId = 1L;
-        IssueCommentCreateDto requestDto = new IssueCommentCreateDto( null, "대댓글 내용");
+        String replyContent = "대댓글 내용";
 
-        // Mock 데이터 설정
-        Issue issue = mock(Issue.class);
-        User user = mock(User.class);
-        IssueComment parentComment = mock(IssueComment.class);
-        IssueComment savedReply = mock(IssueComment.class);
+        // 대댓글 요청 데이터 객체 생성
+        IssueCommentCreateDto requestDto = new IssueCommentCreateDto(null, replyContent);
+
+        // Issue 객체를 생성
+        Issue issue = Issue.builder()
+                .user(null) // 필요한 필드만 초기화
+                .project(null)
+                .title("Test Issue")
+                .issueType(IssueType.BUG)
+                .issueStatus(IssueStatus.BEFORE)
+                .build();
+        ReflectionTestUtils.setField(issue, "id", issueId); // id 값 설정
+
+        // 유저 객체 생성(작성자)
+        User user = User.builder()
+                .email("test@test.com")
+                .password("password")
+                .build();
+        ReflectionTestUtils.setField(user, "id", 2L); // id 값 설정
+
+        // 부모 댓글 객체 생성
+        IssueComment parentComment = IssueComment.builder()
+                .content("부모 댓글")
+                .user(user)
+                .issue(issue)
+                .build();
+        ReflectionTestUtils.setField(parentComment, "id", parentCommentId); // id 값 설정
+
+        // 대댓글 객체 생성
+        IssueComment savedReply = IssueComment.builder()
+                .content(replyContent)
+                .user(user)
+                .issue(issue)
+                .parentComment(parentComment)
+                .build();
+        ReflectionTestUtils.setField(savedReply, "id", 3L); // id 값 설정
 
         CustomUserDetails userDetails = new CustomUserDetails(user);
 
+        // findById,save 호출시 미리 정의 된 객체를 반환
         given(issueRepository.findById(issueId)).willReturn(Optional.of(issue));
         given(commentRepository.findById(parentCommentId)).willReturn(Optional.of(parentComment));
-        given(parentComment.getIssue()).willReturn(issue);
         given(commentRepository.save(any(IssueComment.class))).willReturn(savedReply);
-
-        given(savedReply.getId()).willReturn(1L);
-        given(savedReply.getContent()).willReturn("대댓글 내용");
-        given(savedReply.getUser()).willReturn(user);
-        given(savedReply.getIssue()).willReturn(issue);
-        given(savedReply.getParentComment()).willReturn(parentComment);
 
         // When
         IssueCommentResponseDto response = commentService.createReply(issueId, parentCommentId, requestDto, userDetails);
 
         // Then
         assertAll(
-                () -> assertNotNull(response),
-                () -> assertThat(response.getContent()).isEqualTo("대댓글 내용"),
-                () -> assertThat(response.getUserId()).isEqualTo(user.getId()),
+                () -> assertNotNull(response), // 응답이 null이 아닌지 확인
+                () -> assertThat(response.getContent()).isEqualTo(replyContent), // 응답 내용 확인
+                () -> assertThat(response.getUserId()).isEqualTo(user.getId()), // 유저 ID 확인
+                () -> assertThat(response.getIssueId()).isEqualTo(issue.getId()), // 이슈 ID 확인
+                () -> assertThat(response.getParentCommentId()).isEqualTo(parentComment.getId()), // 부모 댓글 ID 확인
                 () -> verify(commentRepository, times(1)).save(any(IssueComment.class)) // 저장 호출 확인
         );
     }
