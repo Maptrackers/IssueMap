@@ -55,7 +55,7 @@ public class IssueService {
     }
 
     public List<IssueResponseDto> getIssuesByProject(Long projectId) {
-        List<Issue> issues = issueRepository.findByProjectId(projectId);
+        List<Issue> issues = issueRepository.findByProject_ProjectId(projectId);
         return issues.stream()
                 .map(IssueResponseDto::fromEntity)
                 .collect(Collectors.toList());
