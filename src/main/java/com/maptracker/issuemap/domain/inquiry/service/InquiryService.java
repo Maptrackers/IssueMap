@@ -13,7 +13,7 @@ public class InquiryService {
 
     private final RestTemplate restTemplate;
 
-    private static final String BASE_URL = "http://localhost:8081/api/inquiries";
+    private static final String BASE_URL = "http://13.125.217.64:8080/api/inquiries";
     private static final String BEARER_PREFIX = "Bearer ";
     private static final String INVALID_AUTH_HEADER = "Invalid Authorization header format.";
 
